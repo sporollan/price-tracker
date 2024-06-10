@@ -6,9 +6,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-import com.sporollan.product_service.domain.Product;
+import com.sporollan.product_service.model.Product;
 
-@RepositoryRestResource(collectionResourceRel="products", path="products")
 public interface ProductRepository extends MongoRepository<Product, String> {
-    List<Product> findByTracked(@Param("tracked") String tracked);
+    List<Product> findByProductMetadataId(@Param("productMetadataId") String productMetadataId);
 }

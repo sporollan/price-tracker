@@ -1,4 +1,4 @@
-package com.sporollan.product_service.domain;
+package com.sporollan.product_service.model;
 
 import java.time.Instant;
 
@@ -12,15 +12,19 @@ import lombok.Setter;
 @Getter @Setter
 public class Product {
     private @Id String id;
-
-    private String name;
+    private String productMetadataId;
     private String site;
-    private String tracked;
+    private Long price;
     private Long dateAdded;
 
-    private String[] imgPath;
 
     public Product() {
         this.dateAdded = Instant.now().toEpochMilli();
+    }
+    public Product(String productMetadataId, String site, Long price) {
+        this.dateAdded = Instant.now().toEpochMilli();
+        this.productMetadataId = productMetadataId;
+        this.site = site;
+        this.price = price;
     }
 }
