@@ -1,7 +1,7 @@
 package com.sporollan.product_service.exception;
 
 public class ProductNotFoundException extends RuntimeException{
-    public ProductNotFoundException(Long id) {
+    public ProductNotFoundException(String id) {
         super ("Could not find Product " + id);
     }
 }

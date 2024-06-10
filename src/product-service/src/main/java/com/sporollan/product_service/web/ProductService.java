@@ -29,7 +29,7 @@ public class ProductService {
     }
 
     @GetMapping("/product/{id}")
-    public Product getProduct(@PathVariable Long id) {
+    public Product getProduct(@PathVariable String id) {
         return repo.findById(id)
                    .orElseThrow(() -> new ProductNotFoundException(id));
     }
@@ -40,7 +40,7 @@ public class ProductService {
     }
 
     @PutMapping("product/{id}")
-    public Product putMethodName(@PathVariable Long id, @RequestBody Product entity) {
+    public Product putMethodName(@PathVariable String id, @RequestBody Product entity) {
         return repo.findById(id).map(
             product -> {
                 product.setName(entity.getName());

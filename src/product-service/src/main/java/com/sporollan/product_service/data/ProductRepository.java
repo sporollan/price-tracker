@@ -9,6 +9,6 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import com.sporollan.product_service.domain.Product;
 
 @RepositoryRestResource(collectionResourceRel="products", path="products")
-public interface ProductRepository extends MongoRepository<Product, Long> {
+public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findByTracked(@Param("tracked") String tracked);
 }
