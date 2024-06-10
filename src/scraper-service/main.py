@@ -1,3 +1,5 @@
+import calendar
+import datetime
 from typing import List
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +10,7 @@ import models, crud, schemas
 from database import SessionLocal, engine
 models.Base.metadata.create_all(bind=engine)
 
+from scraper import Scraper
 
 app = FastAPI()
 origins = [
@@ -31,17 +34,30 @@ def get_db():
         db.close()
 
 
+def get_scraper():
+    scraper = Scraper()
+    return scraper
+
+
+def get_now():
+    t = datetime.datetime.now()
+    date = datetime.datetime(t.year, t.month, t.day)
+    date_epoch = calendar.timegm(date.timetuple())
+    return date_epoch
+
+# api
 @app.post('/tracked')
-def create_tracked(
+async def create_tracked(
         tracked: schemas.TrackedCreate,
+        now: int = Depends(get_now),
         db: Session = Depends(get_db)
 ):
-    return crud.create_tracked(db, tracked=tracked)
+    return crud.create_tracked(db, tracked=tracked, now=now)
 
 
 @app.get('/tracked',
          response_model=List[schemas.Tracked])
-def get_all(
+async def get_all(
         skip: int=0,
         limit: int=100,
         db: Session = Depends(get_db)
@@ -50,7 +66,7 @@ def get_all(
 
 
 @app.get('/tracked/{id}')
-def get_one(
+async def get_one(
         id: int,
         db: Session = Depends(get_db)
 ):
@@ -58,15 +74,13 @@ def get_one(
 
 
 @app.put('/tracked/{id}')
-def update_tracked(
+async def update_tracked(
         id: int,
         tracked: schemas.TrackedCreate,
         db: Session = Depends(get_db)
 ):
     
-    db_tracked = db.query(models.Tracked) \
-                    .filter(models.Tracked.id == id) \
-                    .first()
+    db_tracked = crud.get_one(db, id)
     
     if not db_tracked:
         # raise exception
@@ -76,7 +90,7 @@ def update_tracked(
 
 
 @app.delete('/tracked/{id}')
-def delete_tracked(
+async def delete_tracked(
         id: int,
         db: Session = Depends(get_db)
 ):
@@ -84,11 +98,23 @@ def delete_tracked(
 
 
 @app.post('/run_scraper')
-def run_scraper_all():
-    pass
-
+async def run_scraper_all(
+    db: Session = Depends(get_db),
+    sc: Scraper = Depends(get_scraper),
+    now: int = Depends(get_now)
+):
+    db_tracked_list = crud.get_all_by_is_active(db)
+    for db_tracked in db_tracked_list:
+        if db_tracked.last_scraped != now:
+            try:
+                sc.run(db_tracked.name, db_tracked.sites)
+            except Exception as e:
+                print(e)
+            else:
+                db_tracked.last_scraped = now
+                db.commit()
 
 @app.post('/run_scraper/{id}')
-def run_scraper_one():
+async def run_scraper_one():
     pass
 

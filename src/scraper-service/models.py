@@ -9,4 +9,5 @@ class Tracked(Base):
     name = Column(String)
     sites = Column(String)
     date_added = Column(BigInteger)
+    last_scraped = Column(BigInteger)
     is_active = Column(Boolean, default=True)

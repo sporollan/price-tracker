@@ -1,3 +1,6 @@
 fastapi
 sqlalchemy
 psycopg2-binary
+requests
+beautifulsoup4
+asyncio

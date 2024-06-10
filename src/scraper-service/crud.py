@@ -7,17 +7,15 @@ import models, schemas
 
 def create_tracked(
         db: Session,
-        tracked: schemas.TrackedCreate
+        tracked: schemas.TrackedCreate,
+        now: int
 ):
     
-    t = datetime.datetime.now()
-    date = datetime.datetime(t.year, t.month, t.day)
-    date_epoch = calendar.timegm(date.timetuple())
-
     db_tracked = models.Tracked(
         name=tracked.name,
         sites=tracked.sites,
-        date_added=date_epoch,
+        date_added=now,
+        last_scraped=0,
         is_active=True
     )
 
@@ -64,3 +62,11 @@ def delete(
             .filter(models.Tracked.id == id) \
             .delete()
     db.commit()
+
+
+def get_all_by_is_active(
+        db: Session
+):
+    return db.query(models.Tracked) \
+                .filter(models.Tracked.is_active) \
+                .all()

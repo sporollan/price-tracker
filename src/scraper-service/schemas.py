@@ -7,6 +7,7 @@ class TrackedBase(BaseModel):
 class Tracked(TrackedBase):
     id: int
     date_added: int
+    last_scraped: int
     is_active: bool
 
     class Config:
