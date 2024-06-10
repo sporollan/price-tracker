@@ -1,5 +1,6 @@
 services:
   product-service:
+    hostname: product-service
     depends_on:
       product-db:
         condition: service_started
@@ -33,7 +34,11 @@ services:
       - "8082:5432"
     environment:
       POSTGRES_PASSWORD: mysecretpassword
+    volumes:
+      - postgresqldata:/var/lib/postgresql/data/
 volumes:
   mongodbdata:
+    driver: local
+  postgresqldata:
     driver: local
   
