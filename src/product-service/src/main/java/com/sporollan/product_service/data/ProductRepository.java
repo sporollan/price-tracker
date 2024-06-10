@@ -1,9 +1,14 @@
 package com.sporollan.product_service.data;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.sporollan.product_service.domain.Product;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
-    
+@RepositoryRestResource(collectionResourceRel="products", path="products")
+public interface ProductRepository extends MongoRepository<Product, Long> {
+    List<Product> findByTracked(@Param("tracked") String tracked);
 }

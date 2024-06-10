@@ -1,5 +1,8 @@
 services:
   product-service:
+    depends_on:
+      product-db:
+        condition: service_started
     build: ./src/product-service
     ports:
       - "8081:8080"
@@ -10,6 +13,18 @@ services:
     build: ./src/scraper-service
     ports:
       - "8001:8001"
+  product-db:
+    hostname: product-db
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: products
+    volumes:
+      - ./src/product-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - mongodbdata:/data/db
   scraper_db:
     hostname: scraper_db
     image: postgres
@@ -18,3 +33,7 @@ services:
       - "8082:5432"
     environment:
       POSTGRES_PASSWORD: mysecretpassword
+volumes:
+  mongodbdata:
+    driver: local
+  
