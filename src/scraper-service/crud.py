@@ -54,6 +54,16 @@ def update(
     db.commit()
 
 
+def toggle(
+        db: Session,
+        db_tracked: schemas.Tracked
+):
+    db_tracked.is_active = not db_tracked.is_active
+    db.commit()
+
+    return db_tracked
+
+
 def delete(
         db: Session,
         id: int

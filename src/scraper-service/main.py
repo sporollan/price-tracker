@@ -89,6 +89,21 @@ async def update_tracked(
     return crud.update(db, id, tracked, db_tracked)
 
 
+@app.put('/toggle/{id}')
+async def toggle(
+        id: int,
+        db: Session = Depends(get_db)
+):
+    
+    db_tracked = crud.get_one(db, id)
+    
+    if not db_tracked:
+        # raise exception
+        pass
+
+    return crud.toggle(db, db_tracked)
+
+
 @app.delete('/tracked/{id}')
 async def delete_tracked(
         id: int,
