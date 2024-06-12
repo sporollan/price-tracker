@@ -11,12 +11,12 @@ import com.sporollan.product_service.exception.ProductNotFoundException;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
-
 
 @RestController
 public class ProductService {
@@ -33,6 +33,7 @@ public class ProductService {
         return repo.findAll();
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/product/{id}")
     public Product getProduct(@PathVariable String id) {
         return repo.findById(id)
