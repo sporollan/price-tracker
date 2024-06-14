@@ -30,7 +30,7 @@ const ProductData = ({product}) => {
                     {products.map(
                         (productData) => (
                             toggle &&
-                            <li>
+                            <li key={productData.id}>
                                 <ul>
                                     <li style={{ alignItems: 'stretch' }}> {dayjs(new Date(productData.dateAdded)).format("DD/MM/YY")}</li>
                                     <li>{"$" + productData.price/100}</li>

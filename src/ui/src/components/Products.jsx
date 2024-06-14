@@ -32,8 +32,9 @@ const Product = () => {
             <input onChange={handleNewProductSearchText}/>
             <button onClick={handleFetchProducts}>Fetch Products</button>
             <ul>
-                {products.map(product => (
-                    <li>
+                {products.map(
+                    (product) => (
+                    <li key={product.id}>
                         <ProductData
                             product={{
                                 name: product.name,
