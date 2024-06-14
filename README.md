@@ -8,6 +8,8 @@ Collects data from web pages and stores it in database.
   - Product Service created with Spring Boot.
     - Data storage with MongoDB.
   - UI. Frontend with React.
+#### TODO:
+  -  Styling
 
 ## Getting Started
 ### Prerequisites
