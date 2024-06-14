@@ -1,5 +1,6 @@
 import axios from "axios"
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import ProductData from "./ProductData"
 
 const Product = () => {
     const [newProductSearchText, setNewProductSearchText] = useState("")
@@ -19,7 +20,7 @@ const Product = () => {
             const response = await axios.get(
                 "http://localhost:8080/productMetadata/" + newProductSearchText,
             )
-            setNewProductSearchText("")
+//            setNewProductSearchText("")
             setProducts(response.data)
         } catch (error){
             console.log("error fetching products")
@@ -33,7 +34,12 @@ const Product = () => {
             <ul>
                 {products.map(product => (
                     <li>
-                        {product.name} {product.price}
+                        <ProductData
+                            product={{
+                                name: product.name,
+                                metadataId: product.id 
+                            }}
+                        />
                     </li>
                 ))}
             </ul>

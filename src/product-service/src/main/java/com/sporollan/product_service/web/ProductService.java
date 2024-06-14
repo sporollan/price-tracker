@@ -35,31 +35,31 @@ public class ProductService {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/product/{id}")
-    public Product getProduct(@PathVariable String id) {
-        return repo.findById(id)
-                   .orElseThrow(() -> new ProductNotFoundException(id));
+    public List<Product> getProduct(@PathVariable String id) {
+
+        return repo.findByProductMetadataId(id);
     }
 
     @PostMapping("/product")
     public ProductCreate createProduct(@RequestBody ProductCreate entity) {
         // looks for metadata and creates it if not found
-        repoMetadata.findById(entity.getName())
+        ProductMetadata db_md = repoMetadata.findById(entity.getName()) 
             .orElse(repoMetadata
-                .save(new ProductMetadata(
-                            entity.getName(),
-                            entity.getTracked(),
-                            entity.getImg()
-                            )));
+                    .save(new ProductMetadata(
+                                        entity.getName(),
+                                        entity.getTracked(),
+                                        entity.getImg()
+                                        )));
 
         repo.save(new Product(
-                            entity.getName(),
+                            db_md.getId(),
                             entity.getSite(),
                             entity.getPrice()
                             ));
         return entity;
     }
 
-    @PutMapping("product/{id}")
+    @PutMapping("/product/{id}")
     public Product putMethodName(@PathVariable String id, @RequestBody Product entity) {
         return repo.findById(id).map(
             product -> {
@@ -71,6 +71,16 @@ public class ProductService {
             })
             .orElseThrow(() -> new ProductNotFoundException(id));
     }
+
+
+    @PostMapping("/updateMetadata")
+    public void postMethodName() {
+        for (Product p :repo.findAll()) {
+            if(p.getProductMetadataId() == null) {
+            }
+        }
+    }
+    
     
     
 }
