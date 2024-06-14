@@ -9,6 +9,6 @@ import com.sporollan.product_service.model.ProductMetadata;
 
 public interface ProductMetadataRepository extends MongoRepository<ProductMetadata, String> {
     List<ProductMetadata> findByTracked(@Param("tracked") String tracked);
-    List<ProductMetadata> findByName(@Param("name") String name);
+    ProductMetadata findByName(@Param("name") String name);
 
 }

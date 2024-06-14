@@ -43,13 +43,15 @@ public class ProductService {
     @PostMapping("/product")
     public ProductCreate createProduct(@RequestBody ProductCreate entity) {
         // looks for metadata and creates it if not found
-        ProductMetadata db_md = repoMetadata.findById(entity.getName()) 
-            .orElse(repoMetadata
-                    .save(new ProductMetadata(
-                                        entity.getName(),
-                                        entity.getTracked(),
-                                        entity.getImg()
-                                        )));
+        ProductMetadata db_md = repoMetadata.findByName(entity.getName());
+        if(db_md == null) {
+            db_md = repoMetadata
+            .save(new ProductMetadata(
+                                entity.getName(),
+                                entity.getTracked(),
+                                entity.getImg()
+                                ));
+        }
 
         repo.save(new Product(
                             db_md.getId(),
