@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useState, useEffect } from 'react'
 import dayjs from "dayjs"
+import './Products.css';
 
 const ProductData = ({product}) => {
     const [products, setProducts] = useState([])
@@ -25,20 +26,24 @@ const ProductData = ({product}) => {
     };
     return (
         <div>
-            <div onClick={handleFetchProductsData}>{product.name}</div>
-                <ul>
+            <div onClick={handleFetchProductsData} className="product_name">
+                {product.name}
+            </div>
+                <div className="products_data_list">
                     {products.map(
                         (productData) => (
                             toggle &&
-                            <li key={productData.id}>
-                                <ul>
-                                    <li style={{ alignItems: 'stretch' }}> {dayjs(new Date(productData.dateAdded)).format("DD/MM/YY")}</li>
-                                    <li>{"$" + productData.price/100}</li>
-                                </ul>
-                            </li>
+                            <div className="product_data" key={productData.id}>
+                                    <div className="product_data_individual">
+                                        {dayjs(new Date(productData.dateAdded)).format("DD/MM/YY")}
+                                    </div>
+                                    <div className="product_data_individual">
+                                        {"$" + productData.price/100}
+                                    </div>
+                            </div>
                         )
                     )}
-                </ul>
+                </div>
         </div>
     )
 }

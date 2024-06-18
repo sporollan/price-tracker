@@ -1,0 +1,39 @@
+
+.product_list {
+    background-color: rgb(66, 66, 69);
+    display: grid;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.products_data_list {
+    background-color: grey;
+    display: flex;
+    justify-content:left;
+}
+
+.product_data_individual{
+    background-color: rgb(255, 255, 255);
+    flex: 1;
+    border-radius: 5px;
+    text-align: center;
+    padding: 3px;
+    border-color: black;
+    border-style: outset;
+}
+
+.product_data {
+    background-color: rgb(6, 36, 95);
+    padding-left: 10px;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.product_name {
+    background-color: rgb(183, 176, 176);
+    border-style: outset;
+    border-radius: 5px;
+    padding: 1px;
+}

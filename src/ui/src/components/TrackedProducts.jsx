@@ -54,7 +54,7 @@ const TrackedProducts = () => {
 
     return (
         <div>
-            <h1>Tracked Products</h1>
+            <h2>Tracked Products</h2>
             <ul>
                 {trackedProducts.map(
                     (product) => (

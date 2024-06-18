@@ -1,8 +1,9 @@
 import axios from "axios"
 import { useState } from 'react'
 import ProductData from "./ProductData"
+import './Products.css'
 
-const Product = () => {
+const Products = () => {
     const [newProductSearchText, setNewProductSearchText] = useState("")
     const [products, setProducts] = useState([])
     const handleUpdateProducts = async () => {
@@ -31,23 +32,23 @@ const Product = () => {
             <button onClick={handleUpdateProducts}>Update Products</button>
             <input onChange={handleNewProductSearchText}/>
             <button onClick={handleFetchProducts}>Fetch Products</button>
-            <ul>
+            <div className="product_list">
                 {products.map(
                     (product) => (
-                    <li key={product.id}>
+                    <div key={product.id}>
                         <ProductData
                             product={{
                                 name: product.name,
                                 metadataId: product.id 
                             }}
                         />
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     )
 }
 
 
 
-export default Product
+export default Products
