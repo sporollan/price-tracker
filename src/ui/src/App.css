@@ -20,7 +20,9 @@
 
 .main_container_item {
   background-color: white;
+  margin-top: 5px;
   margin-left: 15%;
+  width: 100%;
 }
 
 .main_tracked {
