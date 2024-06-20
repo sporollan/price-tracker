@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import './Tracked.styles.css'
 
 const TrackedProducts = () => {
     const [trackedProducts, setTrackedProducts] = useState([]);
@@ -55,17 +56,17 @@ const TrackedProducts = () => {
     return (
         <div>
             <h2>Tracked Products</h2>
-            <ul>
+            <div className='tracked_list'>
                 {trackedProducts.map(
                     (product) => (
-                        <li key={product.name} style={{
+                        <div className='tracked_item' key={product.name} style={{
                             textDecoration: product.is_active ? 'none' : 'line-through'
                           }}>
                             {product.name} <button onClick={event => toggleTrackedProduct(event, product.id)}>Toggle Tracking</button>
-                        </li>
+                        </div>
                     )
                 )}
-            </ul>
+            </div>
             <input onChange={handleChangeTrackedProduct}/>
             <button onClick={handleSubmitTrackedProduct}>Submit</button>
         </div>

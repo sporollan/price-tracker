@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useState, useEffect } from 'react'
 import dayjs from "dayjs"
-import './Products.css';
+import './ProductData.styles.css';
 
 const ProductData = ({product}) => {
     const [products, setProducts] = useState([])

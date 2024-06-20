@@ -37,3 +37,13 @@
     border-radius: 5px;
     padding: 1px;
 }
+
+.tracked_list {
+    display: list-item;
+    margin: 10px;
+    padding-left: 10px;
+}
+
+.tracked_item {
+
+}

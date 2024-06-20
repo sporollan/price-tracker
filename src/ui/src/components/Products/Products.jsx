@@ -1,7 +1,7 @@
 import axios from "axios"
 import { useState } from 'react'
-import ProductData from "./ProductData"
-import './Products.css'
+import ProductData from "../ProductData/ProductData"
+import './Products.styles.css'
 
 const Products = () => {
     const [newProductSearchText, setNewProductSearchText] = useState("")

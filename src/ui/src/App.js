@@ -1,14 +1,21 @@
 import logo from './logo.svg';
 import './App.css';
-import TrackedProducts from './components/TrackedProducts'
-import Products from './components/Products'
+import TrackedProducts from './components/Tracked/Tracked'
+import Products from './components/Products/Products'
+import Header from './components/Header/Header'
 
 function App() {
   return (
     <div className="main">
-        <h1>Price Tracker</h1>
-        <TrackedProducts/>
-        <Products/>
+        <div><Header/></div>
+        <div className='main_container'>
+          <div className='main_container_item'>
+            <TrackedProducts/>
+          </div>
+          <div className='main_container_item'>
+            <Products/>
+          </div>
+        </div>
     </div>
   );
 }
