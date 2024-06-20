@@ -1,15 +1,20 @@
 .product_main_container {
     display: flex;
     flex-wrap: wrap;
-    align-items:center;
-    justify-content: space-evenly;
+    justify-content: flex-start;
 }
 
 .product_item {
     margin: 2px;
     background-color: beige;
-    width: 15%;
+    width: 175px;
     height: 200px;
+}
+
+.product_item:hover {
+    margin:1px;
+    border-style: solid;
+    border-width: 1px;
 }
 
 .product_name h3 {

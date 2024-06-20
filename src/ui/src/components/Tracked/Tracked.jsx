@@ -80,11 +80,12 @@ const Tracked = ({setProducts}) => {
             </div>
                 {trackedProducts.map(
                     (product) => (
-                        <div className='tracked_container'>
+                        <div className='tracked_container' onClick={event => handleFetchProducts(event, product.name)}>
                             <div className='tracked_item' key={product.name} style={{
                                 textDecoration: product.is_active ? 'none' : 'line-through'
-                            }}>
-                                <li onClick={event => handleFetchProducts(event, product.name)}>
+                            }}
+                            >
+                                <li>
                                         {product.name}
                                 </li>
                             </div>
