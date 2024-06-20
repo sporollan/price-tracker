@@ -25,25 +25,27 @@ const ProductData = ({product}) => {
         }
     };
     return (
-        <div>
-            <div onClick={handleFetchProductsData} className="product_name">
-                {product.name}
+        <div onClick={handleFetchProductsData}>
+            <div className="product_name">
+                <h3>
+                    {product.name}
+                </h3>
             </div>
-                <div className="products_data_list">
-                    {products.map(
-                        (productData) => (
-                            toggle &&
-                            <div className="product_data" key={productData.id}>
-                                    <div className="product_data_individual">
-                                        {dayjs(new Date(productData.dateAdded)).format("DD/MM/YY")}
-                                    </div>
-                                    <div className="product_data_individual">
-                                        {"$" + productData.price/100}
-                                    </div>
-                            </div>
-                        )
-                    )}
-                </div>
+            <div className="products_data_list">
+                {products.map(
+                    (productData) => (
+                        toggle &&
+                        <div className="product_data" key={productData.id}>
+                                <div className="product_data_individual">
+                                    {dayjs(new Date(productData.dateAdded)).format("DD/MM/YY")}
+                                </div>
+                                <div className="product_data_individual">
+                                    {"$" + productData.price/100}
+                                </div>
+                        </div>
+                    )
+                )}
+            </div>
         </div>
     )
 }

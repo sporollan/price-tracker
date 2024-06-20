@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import './Tracked.styles.css'
 
-const TrackedProducts = () => {
+const Tracked = ({setProducts}) => {
     const [trackedProducts, setTrackedProducts] = useState([]);
     const [newTrackedProduct, setNewTrackedProuct] = useState("");
 
@@ -53,24 +53,53 @@ const TrackedProducts = () => {
         };
     };
 
+    const handleUpdateProducts = async () => {
+        try {
+            const response = await axios.post("http://localhost:8001/run_scraper")
+        } catch (error){
+            console.log("error updating products")
+        }
+    };
+
+
+    const handleFetchProducts = async (event, newProductSearchText) => {
+        try {
+            const response = await axios.get(
+                "http://localhost:8080/productMetadata/" + newProductSearchText,
+            )
+//            setNewProductSearchText("")
+            setProducts(response.data)
+        } catch (error){
+            console.log("error fetching products")
+        }
+    };
     return (
-        <div>
-            <h2>Tracked Products</h2>
-            <div className='tracked_list'>
+        <div className='tracked_container_list'>
+            <div className='tracked_header'>
+                <h2>Tracked Products</h2>
+            </div>
                 {trackedProducts.map(
                     (product) => (
-                        <div className='tracked_item' key={product.name} style={{
-                            textDecoration: product.is_active ? 'none' : 'line-through'
-                          }}>
-                            {product.name} <button onClick={event => toggleTrackedProduct(event, product.id)}>Toggle Tracking</button>
+                        <div className='tracked_container'>
+                            <div className='tracked_item' key={product.name} style={{
+                                textDecoration: product.is_active ? 'none' : 'line-through'
+                            }}>
+                                <li onClick={event => handleFetchProducts(event, product.name)}>
+                                        {product.name}
+                                </li>
+                            </div>
+                            <div className='tracked_toggle'>
+                                <button onClick={event => toggleTrackedProduct(event, product.id)}>Track</button>
+                            </div>
                         </div>
                     )
                 )}
+            <div className='tracked_add'>
+                <input onChange={handleChangeTrackedProduct} placeholder='New Product...'/>
+                <button onClick={handleSubmitTrackedProduct}>Add</button>
             </div>
-            <input onChange={handleChangeTrackedProduct}/>
-            <button onClick={handleSubmitTrackedProduct}>Submit</button>
         </div>
     )
 }
 
-export default TrackedProducts;
+export default Tracked;

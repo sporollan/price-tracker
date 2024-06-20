@@ -1,49 +1,17 @@
-
-.product_list {
-    background-color: rgb(66, 66, 69);
-    display: grid;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-}
-
-.products_data_list {
-    background-color: grey;
+.product_main_container {
     display: flex;
-    justify-content:left;
+    flex-wrap: wrap;
+    align-items:center;
 }
 
-.product_data_individual{
-    background-color: rgb(255, 255, 255);
-    flex: 1;
-    border-radius: 5px;
+.product_item {
+    margin: 2px;
+    background-color: beige;
+    width: 15%;
+    height: 200px;
+}
+
+.product_name h3 {
+    font-size: 12px;
     text-align: center;
-    padding: 3px;
-    border-color: black;
-    border-style: outset;
-}
-
-.product_data {
-    background-color: rgb(6, 36, 95);
-    padding-left: 10px;
-    margin: 5px;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-.product_name {
-    background-color: rgb(183, 176, 176);
-    border-style: outset;
-    border-radius: 5px;
-    padding: 1px;
-}
-
-.tracked_list {
-    display: list-item;
-    margin: 10px;
-    padding-left: 10px;
-}
-
-.tracked_item {
-
 }
