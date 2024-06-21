@@ -27,12 +27,12 @@ body {
 
 .right_container {
   width: 100%;
-  margin-left: 15%;
+  margin-left: 200px;
   background-color: rgb(243, 241, 241);
 }
 
 .left_container {
-  width: 15%;
+  width: 200px;
   position: fixed;
   background-color: rgb(243, 241, 241);
 }
