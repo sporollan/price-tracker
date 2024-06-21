@@ -43,6 +43,6 @@ body {
     color: rgba(243, 241, 241, 0);
   }
   .right_container {
-    margin-left: 0%;
+    margin: 20px;
   }
 }

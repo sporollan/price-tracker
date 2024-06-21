@@ -6,3 +6,8 @@
     margin: 5px;
     margin-right: 20px;
 }
+
+.header_bar span:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
