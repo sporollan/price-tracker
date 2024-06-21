@@ -1,14 +1,17 @@
+
 .product_main_container {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
+    background-color: rgb(243, 241, 241);
 }
 
 .product_item {
+    background-color: white;
     margin: 2px;
-    background-color: beige;
-    width: 175px;
-    height: 200px;
+    min-width: 150px;
+    width: 19%;
+    height: 275px;
 }
 
 .product_item:hover {
@@ -17,7 +20,8 @@
     border-width: 1px;
 }
 
-.product_name h3 {
+.product_name span {
     font-size: 12px;
     text-align: center;
+    color: black;
 }

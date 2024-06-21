@@ -76,29 +76,28 @@ const Tracked = ({setProducts}) => {
     return (
         <div className='tracked_container_list'>
             <div className='tracked_header'>
-                <h2>Tracked Products</h2>
+                <span>Tracked Products</span>
             </div>
-                {trackedProducts.map(
-                    (product) => (
-                        <div className='tracked_container' onClick={event => handleFetchProducts(event, product.name)}>
-                            <div className='tracked_item' key={product.name} style={{
-                                textDecoration: product.is_active ? 'none' : 'line-through'
-                            }}
-                            >
-                                <li>
-                                        {product.name}
-                                </li>
-                            </div>
-                            <div className='tracked_toggle'>
-                                <button onClick={event => toggleTrackedProduct(event, product.id)}>Track</button>
-                            </div>
-                        </div>
-                    )
-                )}
-            <div className='tracked_add'>
-                <input onChange={handleChangeTrackedProduct} placeholder='New Product...'/>
+            <div className='tracked_row'>
+                <input  className="tracked_left" onChange={handleChangeTrackedProduct} placeholder='New Product...'/>
                 <button onClick={handleSubmitTrackedProduct}>Add</button>
             </div>
+            {trackedProducts.map(
+                (product) => (
+                    <div className='tracked_row'>
+                        <div className='tracked_left' onClick={event => handleFetchProducts(event, product.name)} key={product.name} style={{
+                            textDecoration: product.is_active ? 'none' : 'line-through'
+                        }}>
+                            <span>
+                                    {product.name}
+                            </span>
+                        </div>
+                        <div className='tracked_right'>
+                            <button onClick={event => toggleTrackedProduct(event, product.id)}>Track</button>
+                        </div>
+                    </div>
+                )
+            )}
         </div>
     )
 }

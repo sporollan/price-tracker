@@ -27,9 +27,9 @@ const ProductData = ({product}) => {
     return (
         <div onClick={handleFetchProductsData}>
             <div className="product_name">
-                <h3>
+                <span>
                     {product.name}
-                </h3>
+                </span>
             </div>
             <div className="products_data_list">
                 {products.map(

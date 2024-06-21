@@ -1,22 +1,21 @@
-import logo from './logo.svg';
 import './App.css';
 import Tracked from './components/Tracked/Tracked'
 import Products from './components/Products/Products'
 import Header from './components/Header/Header'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 
 function App() {
   const [products, setProducts] = useState([])
 
   return (
-    <div className="main">
-        <div className='header_container'><Header/></div>
-        <div className='main_container'>
-          <div className='main_tracked'>
+    <div className="main_container">
+        <div className='header'><Header/></div>
+        <div className='body_container'>
+          <div className='left_container'>
             <Tracked setProducts={setProducts}/>
           </div>
-          <div className='main_container_item'>
+          <div className='right_container'>
             <Products products={products}/>
           </div>
         </div>
