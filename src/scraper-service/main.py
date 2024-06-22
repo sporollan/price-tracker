@@ -52,6 +52,13 @@ async def create_tracked(
         now: int = Depends(get_now),
         db: Session = Depends(get_db)
 ):
+
+    # avoid duplicates and null
+    db_tracked = crud.get_by_name(db, tracked.name)
+    if db_tracked or tracked.name == '':
+        # raise exception 
+        return db_tracked
+    
     return crud.create_tracked(db, tracked=tracked, now=now)
 
 

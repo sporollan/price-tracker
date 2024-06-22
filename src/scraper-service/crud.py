@@ -80,3 +80,12 @@ def get_all_by_is_active(
     return db.query(models.Tracked) \
                 .filter(models.Tracked.is_active) \
                 .all()
+
+def get_by_name(
+        db: Session,
+        name: str
+):
+    return db.query(models.Tracked) \
+                .filter(models.Tracked.name == name) \
+                .first()
+
