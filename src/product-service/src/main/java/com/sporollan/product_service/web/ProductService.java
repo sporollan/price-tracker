@@ -52,15 +52,9 @@ public class ProductService {
                                 entity.getImg()
                                 ));
         } else {
-            if(db_md.getImg() == "test") {
-                repoMetadata.deleteById(db_md.getId());
-                db_md = repoMetadata
-                .save(new ProductMetadata(
-                                    entity.getName(),
-                                    entity.getTracked(),
-                                    entity.getImg()
-                                    ));
-            }
+            // update to latest img
+            db_md.setImg(entity.getImg());
+            db_md = repoMetadata.save(db_md);
         }
 
         repo.save(new Product(
