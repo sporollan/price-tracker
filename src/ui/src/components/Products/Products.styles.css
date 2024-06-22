@@ -12,22 +12,35 @@
     }
 }
 
-.product_item {
+.product_item_container {
     background-color: white;
-    margin: 2px;
+    margin: 10px;
     width: 150px;
-    height: 275px;
+    height: 250px;
 }
 
-.product_item:hover {
-    margin:1px;
+.product_item_container:hover {
+    margin:9px;
     border-style: solid;
     border-width: 1px;
     cursor: pointer;
 }
 
-.product_name span {
+.product_name {
     font-size: 12px;
-    text-align: center;
     color: black;
+    text-align: center;
+}
+
+.product_name_container {
+    height: 85px;
+    display: flex;
+    padding: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.product_image {
+    height: 150px;
+    width: 150px;
 }
