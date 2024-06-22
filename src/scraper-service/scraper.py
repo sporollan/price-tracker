@@ -39,6 +39,10 @@ class Scraper():
         s = s.replace(',', '')
         return int(s)
     
+    def test_send(self, url, product):
+        print("SENDING")
+        print(product)
+    
     def run(self, name, sites):
         sites_config = Sites_config(name)
         paths = sites_config.config
@@ -47,30 +51,30 @@ class Scraper():
                 path = paths[site]
                 req = requests.get(url=path['url'], headers=self.headers)
                 soup = BeautifulSoup(req.content, 'html.parser')
-                keys = []
-                for tag in soup.find_all('div'):
-                    try:
-                        if(tag['class'] == ['descrip_full']):
-                            keys.append(tag.text.strip())
-                    except:
-                        pass
-                i = 0
-                j = 1
-                for tag in soup.find_all('span'):
-                    try:
-                        if tag['class'] == ['atg_store_productPrice']:
-                            if j % 3 == 0:
-                                product = {
-                                    'name': keys[i],
-                                    'site': site,
-                                    'tracked': name,
-                                    'price': self.to_price(tag.text.strip()),
-                                    'img': 'test'
-                                }
-                                i = i + 1
-                                for endpoint in self.endpoints:
-                                    self.post_product(url=endpoint, product=product)
-                                    #asyncio.run(self.post_product(url=endpoint, product=product))
-                            j = j + 1
-                    except:
-                        pass
+
+                for item in soup.find_all(class_='clearfix'):
+                    # check discount
+                    price = item.find(class_='price_discount_gde')
+                    
+                    # check normal price
+                    if price is None:
+                        price = item.find(class_='atg_store_newPrice')
+                    
+                    if price:
+                        # if there is price then there is product
+                        product_name = item.find(class_='descrip_full').text
+                        price = self.to_price(price.text)
+                        img = item.find('img').attrs['src']
+
+                        product = {
+                            'name': product_name,
+                            'site': site,
+                            'tracked': name,
+                            'price': price,
+                            'img': img,
+                        }
+
+                        for endpoint in self.endpoints:
+                            self.post_product(url=endpoint, product=product)
+                            #asyncio.run(self.post_product(url=endpoint, product=product))
+
