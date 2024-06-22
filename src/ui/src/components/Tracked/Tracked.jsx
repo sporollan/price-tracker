@@ -75,8 +75,11 @@ const Tracked = ({setProducts}) => {
     };
     return (
         <div className='tracked_container_list'>
-            <div className='tracked_header'>
-                <span>Tracked Products</span>
+            <div className='tracked_header_container'>
+                <div className='tracked_header'>
+                    <span>Tracked Products</span>
+                </div>
+                <button onClick={handleUpdateProducts}>Update</button>
             </div>
             <div className='tracked_row'>
                 <input  className="tracked_left" onChange={handleChangeTrackedProduct} placeholder='New Product...'/>
@@ -98,6 +101,10 @@ const Tracked = ({setProducts}) => {
                     </div>
                 )
             )}
+            <div className='tracked_row'>
+                <div>
+                </div>
+            </div>
         </div>
     )
 }

@@ -9,10 +9,18 @@
 .tracked_header {
     padding: 1px;
     text-align: center;
+    align-items: center;
+    font-size: 14px;
 }
 
-.tracked_header span {
-    font-size: 14px;
+.tracked_header_container {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 10px;
+}
+
+.tracked_header_container button {
+    color: rgb(73, 72, 72);
 }
 
 .tracked_left:hover {
