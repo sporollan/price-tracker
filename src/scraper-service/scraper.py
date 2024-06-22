@@ -64,7 +64,7 @@ class Scraper():
                         # if there is price then there is product
                         product_name = item.find(class_='descrip_full').text
                         price = self.to_price(price.text)
-                        img = item.find('img').attrs['src']
+                        img = item.find(class_='atg_store_productImage').find('img').attrs['src']
 
                         product = {
                             'name': product_name,

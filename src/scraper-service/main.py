@@ -120,7 +120,7 @@ async def run_scraper_all(
 ):
     db_tracked_list = crud.get_all_by_is_active(db)
     for db_tracked in db_tracked_list:
-        if (datetime.datetime.fromtimestamp(db_tracked.last_scraped).strftime('%Y-%m-%d') != \
+        if True or (datetime.datetime.fromtimestamp(db_tracked.last_scraped).strftime('%Y-%m-%d') != \
             datetime.datetime.fromtimestamp(now).strftime('%Y-%m-%d')) :
             try:
                 sc.run(db_tracked.name, db_tracked.sites)
