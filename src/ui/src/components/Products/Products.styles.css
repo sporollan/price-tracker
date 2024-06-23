@@ -34,9 +34,10 @@
 }
 
 .product_name_container {
-    height: 85px;
+    height: 65px;
     display: flex;
     padding: 5px;
+    padding-bottom: 0px;
     align-items: center;
     justify-content: center;
 }
@@ -45,3 +46,11 @@
     height: 150px;
     width: 150px;
 }
+
+.price_info_container {
+    height:25px;
+    display: flex;
+    justify-content: center;
+    align-items: top;    
+}
+
