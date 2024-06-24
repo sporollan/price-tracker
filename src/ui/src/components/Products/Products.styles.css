@@ -3,7 +3,6 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    background-color: rgb(243, 241, 241);
 }
 
 @media (max-width: 800px) {
