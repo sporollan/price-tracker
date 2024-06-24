@@ -1,6 +1,3 @@
-import axios from "axios"
-import { useState } from 'react'
-import ProductData from "../ProductData/ProductData"
 import PriceInfo from "../PriceInfo/PriceInfo"
 import './Products.styles.css'
 

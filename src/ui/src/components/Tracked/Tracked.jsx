@@ -39,7 +39,7 @@ const Tracked = ({setProducts}) => {
     const handleSubmitTrackedProduct = async () => {
         try {
             console.log(newTrackedProduct)
-            const response = await axios.post(
+            await axios.post(
                 "http://localhost:8001/tracked",
                 {
                     name: newTrackedProduct,
@@ -55,7 +55,7 @@ const Tracked = ({setProducts}) => {
 
     const handleUpdateProducts = async () => {
         try {
-            const response = await axios.post("http://localhost:8001/run_scraper")
+            await axios.post("http://localhost:8001/run_scraper")
         } catch (error){
             console.log("error updating products")
         }
@@ -85,6 +85,7 @@ const Tracked = ({setProducts}) => {
                 <input  className="tracked_left" onChange={handleChangeTrackedProduct} placeholder='New Product...'/>
                 <button onClick={handleSubmitTrackedProduct}>Add</button>
             </div>
+            <div className='tracked_item_list_container'>
             {trackedProducts.map(
                 (product) => (
                     <div className='tracked_row'>
@@ -101,6 +102,7 @@ const Tracked = ({setProducts}) => {
                     </div>
                 )
             )}
+            </div>
             <div className='tracked_row'>
                 <div>
                 </div>
