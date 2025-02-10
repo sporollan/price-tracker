@@ -9,7 +9,7 @@ services:
       - "8080:8080"
   scraper-service:
     depends_on:
-      scraper_db:
+      scraper-db:
         condition: service_started
     build: ./src/scraper-service
     ports:
@@ -26,8 +26,8 @@ services:
     volumes:
       - ./src/product-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodbdata:/data/db
-  scraper_db:
-    hostname: scraper_db
+  scraper-db:
+    hostname: scraper-db
     image: postgres
     restart: always
     ports:
