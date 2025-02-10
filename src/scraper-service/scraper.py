@@ -21,8 +21,9 @@ class Scraper():
     endpoints = []
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
 
-    def __init__(self):
+    def __init__(self, debug=False):
         self.endpoints = [f'http://{PRODUCT_HOST}:8080/product']
+        self.debug = debug
 
     def post_product(self, url, product):
         # posts product to url
@@ -39,8 +40,9 @@ class Scraper():
         s = s.replace(',', '')
         return int(s)
     
-    def test_send(self, url, product):
-        print("SENDING")
+    def print_product(self, url, product):
+        # debug only
+        print(f"SENDING TO {url}")
         print(product)
     
     def run(self, name, sites):
@@ -75,6 +77,9 @@ class Scraper():
                         }
 
                         for endpoint in self.endpoints:
-                            self.post_product(url=endpoint, product=product)
+                            if self.debug:
+                                self.print_product(url=endpoint, product=product)
+                            else:
+                                self.post_product(url=endpoint, product=product)
                             #asyncio.run(self.post_product(url=endpoint, product=product))
 
