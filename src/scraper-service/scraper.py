@@ -80,7 +80,8 @@ class Scraper():
             # Start Scraping Product on each site
             if site in sites:
                 page=0
-                while page < 10:
+                stop = False
+                while page < 10 and not stop:
                     url=self.build_url(name=name, start=page*12)
                     page=page+1
             
@@ -92,15 +93,6 @@ class Scraper():
                     WebDriverWait(driver, 15).until(
                         EC.presence_of_element_located((By.CLASS_NAME, "product-image"))
                     )
-                    # Scroll to load all products (lazy-loading)
-                    last_height = driver.execute_script("return document.body.scrollHeight")
-                    while True:
-                        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                        time.sleep(2)  # Adjust based on network speed
-                        new_height = driver.execute_script("return document.body.scrollHeight")
-                        if new_height == last_height:
-                            break
-                        last_height = new_height
 
                     # Extract product data
                     products = driver.find_elements(By.CLASS_NAME, "producto-card")
@@ -124,5 +116,7 @@ class Scraper():
                                 else:
                                     self.post_product(url=endpoint, product=new_product)
                                 #asyncio.run(self.post_product(url=endpoint, product=product))
+                        else:
+                            stop = True
 
                 driver.quit()
