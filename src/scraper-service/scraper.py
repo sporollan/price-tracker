@@ -16,7 +16,7 @@ class Sites_config():
     def __init__(self, name):
         self.config =  {
             'COTO': {
-                'url': f'https://www.cotodigital.com.ar/sitios/cdigi/categoria?_dyncharset=utf-8&Dy=1&Ntt={name}',
+                'url': '',
                 'name': ['div', '', 0],
                 'price': ['span', '', 3]
             }
@@ -52,6 +52,15 @@ class Scraper():
             print(f'Error at post request of {product} to {url}')
             print(e)
 
+
+    def build_url(self, name, start=0):
+        return f'''https://www.cotodigital.com.ar/sitios/cdigi/categoria%3FDy%3D1&Nf%3Dproduct.
+                startDate%257CLTEQ%2B1.739232E12%257C%257Cproduct.endDate%257CGTEQ%2B1.739232E1
+                2&No%3D{start}&Nr%3DAND%2528product.sDisp_200%253A1004%252Cproduct.language%253
+                Aespa%25C3%25B1ol%252COR%2528product.siteId%253ACotoDigital%2529%2529&Nrpp%3D12
+                &Ntt%3D{name}&format%3Djson'''.replace('\n','').replace(' ','')
+
+
     def to_price(self, s):
         # receives price, returns cents as int
         s = s.replace('$', '')
@@ -70,48 +79,50 @@ class Scraper():
         for site in paths.keys():
             # Start Scraping Product on each site
             if site in sites:
-                path = paths[site]
+                page=0
+                while page < 10:
+                    url=self.build_url(name=name, start=page*12)
+                    page=page+1
+            
+                    # Get response
+                    driver = webdriver.Chrome(options=self.chrome_options)
+                    driver.get(url)
 
-                # Get response
-                #req = requests.get(url=path['url'], headers=self.headers)
-                driver = webdriver.Chrome(options=self.chrome_options)
-                driver.get(path['url'])
-                #print(driver.page_source)
-                # Wait for products to load
-                WebDriverWait(driver, 15).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "product-image"))
-                )
-                # Scroll to load all products (lazy-loading)
-                last_height = driver.execute_script("return document.body.scrollHeight")
-                while True:
-                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                    time.sleep(2)  # Adjust based on network speed
-                    new_height = driver.execute_script("return document.body.scrollHeight")
-                    if new_height == last_height:
-                        break
-                    last_height = new_height
+                    # Wait for products to load
+                    WebDriverWait(driver, 15).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "product-image"))
+                    )
+                    # Scroll to load all products (lazy-loading)
+                    last_height = driver.execute_script("return document.body.scrollHeight")
+                    while True:
+                        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                        time.sleep(2)  # Adjust based on network speed
+                        new_height = driver.execute_script("return document.body.scrollHeight")
+                        if new_height == last_height:
+                            break
+                        last_height = new_height
 
-                # Extract product data
-                products = driver.find_elements(By.CLASS_NAME, "producto-card")
-                for product in products:
-                    product_name = product.find_element(By.CLASS_NAME, "nombre-producto").text
-                    price = product.find_element(By.CLASS_NAME, "card-title").text
-                    image_element = product.find_element(By.CLASS_NAME, "product-image")
-                    img = image_element.get_attribute("src")
-                    print(f"Product: {product_name} | Price: {price}")
-                    if price:
-                        new_product = {
-                            'name': product_name,
-                            'site': site,
-                            'tracked': name,
-                            'price': price,
-                            'img': img,
-                        }
-                        for endpoint in self.endpoints:
-                            if self.debug:
-                                self.print_product(url=endpoint, product=new_product)
-                            else:
-                                self.post_product(url=endpoint, product=new_product)
-                            #asyncio.run(self.post_product(url=endpoint, product=product))
+                    # Extract product data
+                    products = driver.find_elements(By.CLASS_NAME, "producto-card")
+                    for product in products:
+                        product_name = product.find_element(By.CLASS_NAME, "nombre-producto").text
+                        price = product.find_element(By.CLASS_NAME, "card-title").text
+                        image_element = product.find_element(By.CLASS_NAME, "product-image")
+                        img = image_element.get_attribute("src")
+                        print(f"Product: {product_name} | Price: {price}")
+                        if price:
+                            new_product = {
+                                'name': product_name,
+                                'site': site,
+                                'tracked': name,
+                                'price': self.to_price(price),
+                                'img': img,
+                            }
+                            for endpoint in self.endpoints:
+                                if self.debug:
+                                    self.print_product(url=endpoint, product=new_product)
+                                else:
+                                    self.post_product(url=endpoint, product=new_product)
+                                #asyncio.run(self.post_product(url=endpoint, product=product))
 
                 driver.quit()
