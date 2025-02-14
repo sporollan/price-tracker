@@ -1,18 +1,35 @@
 import calendar
 import datetime
 from typing import List
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from fastapi.responses import JSONResponse
+from sqlalchemy import StaticPool, create_engine
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
+from config import DATABASE_URL
 import models, crud, schemas
-from database import SessionLocal, engine
-models.Base.metadata.create_all(bind=engine)
-
+from database import Base
 from scraper import Scraper
-
 app = FastAPI()
+import os
+
+# Database Setup
+ENV=os.getenv('ENV', 'test')
+if ENV == 'development':
+    engine = create_engine(DATABASE_URL)
+elif ENV == 'test':
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool
+    )
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base.metadata.create_all(bind=engine)
+
 origins = [
     "http://localhost",
     "http://localhost:3000"
@@ -33,7 +50,6 @@ def get_db():
     finally:
         db.close()
 
-
 def get_scraper():
     scraper = Scraper()
     return scraper
@@ -46,25 +62,31 @@ def get_now():
     return date_epoch
 
 # api
+# Tracked refers to the name of the product to be tracked.
+
+@app.get('/')
+async def read_root():
+    return {"message": "Hello World"}
+
 @app.post('/tracked')
 async def create_tracked(
         tracked: schemas.TrackedCreate,
         now: int = Depends(get_now),
         db: Session = Depends(get_db)
 ):
-
     # avoid nulls
     if tracked.name == '':
         # raise exception
-        return None
+        raise HTTPException(status_code=422, detail="Name cannot be null")
     
     # avoid duplicates
     tracked.name = tracked.name.lower()
     db_tracked = crud.get_by_name(db, tracked.name)
     if db_tracked:
-        # raise exception 
-        return db_tracked
+        # raise exception
+        raise HTTPException(status_code=409, detail="Name already exists")
     
+    # create tracked
     return crud.create_tracked(db, tracked=tracked, now=now)
 
 
@@ -78,13 +100,16 @@ async def get_all(
     return crud.get_all(db, skip=skip, limit=limit)
 
 
-@app.get('/tracked/{id}')
+@app.get('/tracked/{id}',
+         response_model=schemas.Tracked)
 async def get_one(
         id: int,
         db: Session = Depends(get_db)
 ):
-    return crud.get_one(db, id)
-
+    db_tracked = db.query(models.Tracked).filter(models.Tracked.id == id).first()
+    if not db_tracked:
+        raise HTTPException(status_code=404, detail="Tracked item not found")
+    return db_tracked
 
 @app.put('/tracked/{id}')
 async def update_tracked(
@@ -92,12 +117,12 @@ async def update_tracked(
         tracked: schemas.TrackedCreate,
         db: Session = Depends(get_db)
 ):
-    
+
     db_tracked = crud.get_one(db, id)
     
-    if not db_tracked:
-        # raise exception
-        pass
+    if db_tracked:
+        raise HTTPException(status_code=201, detail="Tracked item already exists")
+
 
     return crud.update(db, id, tracked, db_tracked)
 

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class TrackedBase(BaseModel):
     name: str
@@ -9,9 +9,8 @@ class Tracked(TrackedBase):
     date_added: int
     last_scraped: int
     is_active: bool
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes=True)
 
 class TrackedCreate(TrackedBase):
     pass

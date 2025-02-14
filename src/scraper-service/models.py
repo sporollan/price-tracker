@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, Boolean, BigInteger
-
 from database import Base
 
 class Tracked(Base):

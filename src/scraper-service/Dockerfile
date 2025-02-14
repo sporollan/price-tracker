@@ -4,6 +4,7 @@ ENV SCRAPER_DB_HOST=scraper-db
 ENV PRODUCT_SERVICE_HOST=product-service
 ENV HOST=0.0.0.0
 ENV PORT=8001
+ENV ENV=development
 
 # Install system dependencies
 RUN apk update && apk add --no-cache \
