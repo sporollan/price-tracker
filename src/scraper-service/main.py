@@ -135,11 +135,11 @@ async def toggle(
     
     db_tracked = crud.get_one(db, id)
     
-    if not db_tracked:
-        # raise exception
-        pass
+    if db_tracked is None:
+        raise HTTPException(status_code=404, detail="Tracked item not found")
 
-    return crud.toggle(db, db_tracked)
+    crud.toggle(db, db_tracked)
+    return {'is_active': db_tracked.is_active}
 
 
 @app.delete('/tracked/{id}')
@@ -163,10 +163,13 @@ async def run_scraper_all(
             try:
                 sc.run(db_tracked.name, db_tracked.sites)
             except Exception as e:
-                print(e)
+                raise HTTPException(status_code=500, detail={'message': 'Error running scraper'})
             else:
                 db_tracked.last_scraped = now
                 db.commit()
+        else:
+            return {'message': 'No new data available for scraping today'}
+    return {'message': 'Scraping all tracked items completed successfully.'}
 
 @app.post('/run_scraper/{id}')
 async def run_scraper_one():
