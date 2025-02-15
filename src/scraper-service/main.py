@@ -1,21 +1,23 @@
+
 import calendar
 import datetime
+import os
+
 from typing import List
+
 from fastapi import FastAPI, Depends, HTTPException, Request
-from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastapi.responses import JSONResponse
 from sqlalchemy import StaticPool, create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
-from config import DATABASE_URL
 import models, crud, schemas
+from config import DATABASE_URL
 from database import Base
 from scraper import Scraper
+
 app = FastAPI()
-import os
 
 # Database Setup
 ENV=os.getenv('ENV', 'test')
@@ -30,6 +32,7 @@ elif ENV == 'test':
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
+# CORS Setup
 origins = [
     "http://localhost",
     "http://localhost:3000"
@@ -42,7 +45,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Dependency
+# Dependencies
 def get_db():
     db = SessionLocal()
     try:
@@ -61,12 +64,12 @@ def get_now():
     date_epoch = calendar.timegm(date.timetuple())
     return date_epoch
 
-# api
-# Tracked refers to the name of the product to be tracked.
 
+# Routes
 @app.get('/')
 async def read_root():
     return {"message": "Hello World"}
+
 
 @app.post('/tracked')
 async def create_tracked(
@@ -76,17 +79,14 @@ async def create_tracked(
 ):
     # avoid nulls
     if tracked.name == '':
-        # raise exception
         raise HTTPException(status_code=422, detail="Name cannot be null")
     
     # avoid duplicates
     tracked.name = tracked.name.lower()
     db_tracked = crud.get_by_name(db, tracked.name)
     if db_tracked:
-        # raise exception
         raise HTTPException(status_code=409, detail="Name already exists")
     
-    # create tracked
     return crud.create_tracked(db, tracked=tracked, now=now)
 
 
@@ -111,6 +111,7 @@ async def get_one(
         raise HTTPException(status_code=404, detail="Tracked item not found")
     return db_tracked
 
+
 @app.put('/tracked/{id}')
 async def update_tracked(
         id: int,
@@ -122,7 +123,6 @@ async def update_tracked(
     
     if db_tracked:
         raise HTTPException(status_code=201, detail="Tracked item already exists")
-
 
     return crud.update(db, id, tracked, db_tracked)
 
