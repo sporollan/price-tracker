@@ -170,8 +170,3 @@ async def run_scraper_all(
         else:
             return {'message': 'No new data available for scraping today'}
     return {'message': 'Scraping all tracked items completed successfully.'}
-
-@app.post('/run_scraper/{id}')
-async def run_scraper_one():
-    pass
-
