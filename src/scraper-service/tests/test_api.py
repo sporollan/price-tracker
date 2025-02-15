@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
 
@@ -55,3 +56,31 @@ def test_create_tracked_endpoint_invalid_name():
     response = client.post("/tracked", json={"name": "", "sites":"COTO"})
     assert response.status_code == 422
     assert response.json() == {"detail": "Name cannot be null"}
+
+# Test toggle
+def test_toggle_endpoint():
+    response = client.put('/toggle/1')
+    assert response.status_code == 200
+    assert response.json() == {"is_active": False}
+    response = client.put('/toggle/1')
+    assert response.status_code == 200
+    assert response.json() == {"is_active": True}
+
+def test_toggle_endpoint_not_found():
+    response = client.put('/toggle/999')
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Tracked item not found"}
+
+# Test run_scraper_all
+def test_run_scraper_all_endpoint_success():
+    with patch('scraper.Scraper.run') as mock_run:
+        mock_run.return_value = None
+        response = client.post("/run_scraper")
+    assert response.json() == {'message': 'Scraping all tracked items completed successfully.'}
+    assert response.status_code == 200
+def test_run_scraper_all_endpoint_no_new_data():
+    with patch('scraper.Scraper.run') as mock_run:
+        mock_run.return_value = None
+        response = client.post("/run_scraper")
+        assert response.status_code == 200
+        assert response.json() == {'message': 'No new data available for scraping today'}
