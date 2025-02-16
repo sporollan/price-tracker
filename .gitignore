@@ -6,6 +6,7 @@ test.py
 ### Java ###
 # Compiled class file
 *.class
+jdk-22
 
 # Log file
 *.log
