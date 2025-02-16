@@ -28,6 +28,11 @@ public class ProductService {
         this.repoMetadata = repoMetadata;
     }
 
+    @GetMapping("/")
+    public String greeting() {
+        return "Hello, World";
+    }
+
     @GetMapping("/product")
     public List<Product> getProducts() {
         return repo.findAll();
@@ -76,17 +81,6 @@ public class ProductService {
                 return product;
             })
             .orElseThrow(() -> new ProductNotFoundException(id));
-    }
-
-
-    @PostMapping("/updateMetadata")
-    public void postMethodName() {
-        for (Product p :repo.findAll()) {
-            if(p.getProductMetadataId() == null) {
-            }
-        }
-    }
-    
-    
+    }    
     
 }
