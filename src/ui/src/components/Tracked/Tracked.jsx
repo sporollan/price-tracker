@@ -2,6 +2,9 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import './Tracked.styles.css'
 
+// Configure axios defaults for the host
+axios.defaults.baseURL = 'http://ui.local';
+
 const Tracked = ({setProducts}) => {
     const [trackedProducts, setTrackedProducts] = useState([]);
     const [newTrackedProduct, setNewTrackedProuct] = useState("");
@@ -13,7 +16,7 @@ const Tracked = ({setProducts}) => {
     const fetchTrackedProducts = async () => {
         try {
             const response = await axios.get(
-                "http://localhost:8001/tracked/?skip=0&limit=100"
+                "tracked/?skip=0&limit=100"  // Note: removed leading slash
             );
             setTrackedProducts(response.data);
         }catch (error){
@@ -24,7 +27,7 @@ const Tracked = ({setProducts}) => {
     const toggleTrackedProduct = async (event, id) => {
         try {
             await axios.put(
-                "http://localhost:8001/toggle/" + id
+                `toggle/${id}`  // Note: removed leading slash
             )
         }catch (error){
             console.log("error toggling product " + id)
@@ -40,7 +43,7 @@ const Tracked = ({setProducts}) => {
         try {
             console.log(newTrackedProduct)
             await axios.post(
-                "http://localhost:8001/tracked",
+                "tracked",  // Note: removed leading slash
                 {
                     name: newTrackedProduct,
                     sites: "COTO"
@@ -55,24 +58,23 @@ const Tracked = ({setProducts}) => {
 
     const handleUpdateProducts = async () => {
         try {
-            await axios.post("http://localhost:8001/run_scraper")
+            await axios.post("run_scraper")  // Note: removed leading slash
         } catch (error){
             console.log("error updating products")
         }
     };
 
-
     const handleFetchProducts = async (event, newProductSearchText) => {
         try {
             const response = await axios.get(
-                "http://localhost:8080/productMetadata/" + newProductSearchText,
+                `productMetadata/${newProductSearchText}`,  // Note: removed leading slash
             )
-//            setNewProductSearchText("")
             setProducts(response.data)
         } catch (error){
             console.log("error fetching products")
         }
     };
+
     return (
         <div className='tracked_container_list'>
             <div className='tracked_header_container'>
