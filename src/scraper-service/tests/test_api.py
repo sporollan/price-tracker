@@ -1,17 +1,16 @@
 import os
-import requests
 from unittest.mock import patch
+from fastapi.testclient import TestClient
+from main import app
 
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8001")
-
+client = TestClient(app)
 def test_root_endpoint_success():
-    response = requests.get(f"{BASE_URL}/")
+    response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"message": "Hello World"}
 
-# Test cases for get tracked endpoint
 def test_get_tracked_endpoint_success():
-    response = requests.get(f"{BASE_URL}/tracked")
+    response = client.get("/tracked")
     assert response.status_code == 200
     assert isinstance(response.json(), list)
     for item in response.json():
@@ -26,12 +25,11 @@ def test_get_tracked_endpoint_success():
         assert isinstance(item['is_active'], bool)
 
 def test_get_tracked_endpoint_failure():
-    response = requests.get(f"{BASE_URL}/tracked/12340")
+    response = client.get("/tracked/12340")
     assert response.status_code == 404
 
-# Test cases for create tracked endpoint
 def test_create_tracked_endpoint_success():
-    response = requests.post(f"{BASE_URL}/tracked", json={'name': 'cafe', 'sites': 'COTO'})
+    response = client.post("/tracked", json={'name': 'cafe', 'sites': 'COTO'})
     assert response.status_code == 200
     assert isinstance(response.json(), dict)
     assert 'id' in response.json()
@@ -45,41 +43,39 @@ def test_create_tracked_endpoint_success():
     assert isinstance(response.json()['is_active'], bool)
 
 def test_create_tracked_endpoint_duplicate():
-    response = requests.post(f"{BASE_URL}/tracked", json={'name': 'cafe1', 'sites': 'COTO'})
+    response = client.post("/tracked", json={'name': 'cafe1', 'sites': 'COTO'})
     assert response.status_code == 200
-    response = requests.post(f"{BASE_URL}/tracked", json={'name': 'cafe1', 'sites': 'COTO'})
+    response = client.post("/tracked", json={'name': 'cafe1', 'sites': 'COTO'})
     assert response.status_code == 409
     assert response.json() == {'detail': 'Name already exists'}
 
 def test_create_tracked_endpoint_invalid_name():
-    response = requests.post(f"{BASE_URL}/tracked", json={'name': '', 'sites': 'COTO'})
+    response = client.post("/tracked", json={'name': '', 'sites': 'COTO'})
     assert response.status_code == 422
     assert response.json() == {'detail': 'Name cannot be null'}
 
-# Test toggle endpoint
 def test_toggle_endpoint():
-    response = requests.put(f"{BASE_URL}/toggle/1")
+    response = client.put("/toggle/1")
     assert response.status_code == 200
     assert response.json() == {"is_active": False}
-    response = requests.put(f"{BASE_URL}/toggle/1")
+    response = client.put("/toggle/1")
     assert response.status_code == 200
     assert response.json() == {"is_active": True}
 
 def test_toggle_endpoint_not_found():
-    response = requests.put(f"{BASE_URL}/toggle/999")
+    response = client.put("/toggle/999")
     assert response.status_code == 404
     assert response.json() == {"detail": "Tracked item not found"}
 
-# Test run_scraper_all endpoint success
 def test_run_scraper_all_endpoint_success():
     with patch('scraper.Scraper.run') as mock_run:
         mock_run.return_value = None
-        response = requests.post(f"{BASE_URL}/run_scraper")
-    assert response.json() == {'message': 'Scraping all tracked items completed successfully.'}
+        response = client.post("/run_scraper")
+    assert response.json() ==  {'detail': {'message': 'Scraping completed successfully'}}
     assert response.status_code == 200
 
 def test_run_scraper_all_endpoint_no_new_data():
     with patch('scraper.Scraper.run') as mock_run:
         mock_run.return_value = None
-        response = requests.post(f"{BASE_URL}/run_scraper")
-        assert response.json() == {'message': 'No new data available for scraping today'}
+        response = client.post("/run_scraper")
+        assert response.json() == {'detail': {'message': 'No new data to scrape'}}

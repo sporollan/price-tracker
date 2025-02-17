@@ -174,5 +174,5 @@ async def run_scraper_all(
     if not scraping_done:
         raise HTTPException(status_code=400, detail={'message': 'No new data to scrape'})
     else:
-        raise HTTPException(status_code=201, detail={'message': 'Scraping completed successfully'})
+        raise HTTPException(status_code=200, detail={'message': 'Scraping completed successfully'})
 
