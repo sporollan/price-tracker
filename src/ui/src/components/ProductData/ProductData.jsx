@@ -2,6 +2,7 @@ import axios from "axios"
 import { useState } from 'react'
 import dayjs from "dayjs"
 import './ProductData.styles.css';
+axios.defaults.baseURL = 'http://ui.local';
 
 const ProductData = ({product}) => {
     const [products, setProducts] = useState([])
@@ -17,7 +18,7 @@ const ProductData = ({product}) => {
     const fetchProductsData = async () => {
         try {
             const response = await axios.get(
-                "http://localhost:8080/product/" + product.metadataId,
+                "product/" + product.metadataId,
             )
             setProducts(response.data)
         } catch (error){

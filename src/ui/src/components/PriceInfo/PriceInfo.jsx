@@ -2,6 +2,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import './PriceInfo.styles.css'
+axios.defaults.baseURL = 'http://ui.local';
 
 
 const PriceInfo = ({metadataId}) => {
@@ -15,7 +16,7 @@ const PriceInfo = ({metadataId}) => {
     const fetchPrice = async () => {
         try {
             const response = await axios.get(
-                "http://localhost:8080/product/" + metadataId
+                "product/" + metadataId
             );
             const data = response.data.at(-1);
             setPrice(data.price/100);
