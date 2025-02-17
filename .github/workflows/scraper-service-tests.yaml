@@ -1,0 +1,40 @@
+name: Scraper Service Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/scraper-service/**'          # Trigger only when files in src are changed
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/scraper-service/**'          # Trigger only when files in src are changed
+
+jobs:
+  test-python-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11.2'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r src/scraper-service/requirements.txt
+
+      # Step 4: Run pytest
+      - name: Run pytest
+        working-directory: src/scraper-service
+        run: |
+          pytest
