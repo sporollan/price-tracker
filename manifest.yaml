@@ -251,6 +251,13 @@ spec:
             name: scraper-service
             port:
               number: 8001
+      - path: /product
+        pathType: Prefix
+        backend:
+          service:
+            name: product-service
+            port:
+              number: 8080
       - path: /productMetadata
         pathType: Prefix
         backend:
