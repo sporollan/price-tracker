@@ -1,0 +1,6 @@
+resources:
+  - configmap.yaml
+  - product-service-deployment.yaml
+  - scraper-service-deployment.yaml
+  - ui-deployment.yaml
+  - ingress.yaml

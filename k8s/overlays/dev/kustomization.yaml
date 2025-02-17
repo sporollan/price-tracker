@@ -1,0 +1,22 @@
+resources:
+  - ../../base
+
+patches:
+  - path: product-service-replica-patch.yaml
+    target:
+      kind: Deployment
+      name: product-service
+  - path: ui-replica-patch.yaml
+    target:
+      kind: Deployment
+      name: ui
+  - path: scraper-service-replica-patch.yaml
+    target:
+      kind: Deployment
+      name: scraper-service
+
+configMapGenerator:
+  - name: app-config
+    behavior: replace
+    literals:
+      - ENVIRONMENT=development
