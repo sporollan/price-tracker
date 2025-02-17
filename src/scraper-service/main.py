@@ -86,7 +86,6 @@ async def create_tracked(
     db_tracked = crud.get_by_name(db, tracked.name)
     if db_tracked:
         raise HTTPException(status_code=409, detail="Name already exists")
-    
     return crud.create_tracked(db, tracked=tracked, now=now)
 
 
@@ -157,16 +156,23 @@ async def run_scraper_all(
     now: int = Depends(get_now)
 ):
     db_tracked_list = crud.get_all_by_is_active(db)
+    scraping_done = False
     for db_tracked in db_tracked_list:
         if (datetime.datetime.fromtimestamp(db_tracked.last_scraped).strftime('%Y-%m-%d') != \
             datetime.datetime.fromtimestamp(now).strftime('%Y-%m-%d')) :
             try:
                 sc.run(db_tracked.name, db_tracked.sites)
             except Exception as e:
-                raise HTTPException(status_code=500, detail={'message': 'Error running scraper'})
+                print(e)
             else:
                 db_tracked.last_scraped = now
+                scraping_done = True
                 db.commit()
         else:
-            return {'message': 'No new data available for scraping today'}
-    return {'message': 'Scraping all tracked items completed successfully.'}
+            pass
+    
+    if not scraping_done:
+        raise HTTPException(status_code=400, detail={'message': 'No new data to scrape'})
+    else:
+        raise HTTPException(status_code=201, detail={'message': 'Scraping completed successfully'})
+
