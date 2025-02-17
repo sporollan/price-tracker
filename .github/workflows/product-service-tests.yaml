@@ -1,0 +1,53 @@
+name: Product Service Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-product-service:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Java
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '22'
+          distribution: 'temurin'
+
+      # Step 3: Set up Docker and Docker Compose
+      - name: Set up Docker
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # Step 4: Start MongoDB using Docker Compose
+      - name: Start MongoDB
+        run: |
+          docker compose up -d product-db
+          echo "Waiting for MongoDB to start..."
+          sleep 10 # Give MongoDB time to initialize
+
+      # Step 5: Run mvnw verify
+      - name: Run mvnw verify
+        working-directory: src/product-service
+        run: |
+          chmod +x mvnw
+          ./mvnw verify
+
+      # Step 6: Clean up
+      - name: Stop and remove containers
+        if: always() # Ensure cleanup happens even if previous steps fail
+        run: |
+          docker compose down
