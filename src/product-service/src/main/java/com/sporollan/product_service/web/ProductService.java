@@ -28,9 +28,13 @@ public class ProductService {
         this.repoMetadata = repoMetadata;
     }
 
+    public void dropDB() {
+        repo.deleteAll();
+        repoMetadata.deleteAll();
+    }
     @GetMapping("/")
     public String greeting() {
-        return "Hello, World";
+        return "Hello, World!";
     }
 
     @GetMapping("/product")
@@ -44,7 +48,6 @@ public class ProductService {
 
         return repo.findByProductMetadataId(id);
     }
-
     @PostMapping("/product")
     public ProductCreate createProduct(@RequestBody ProductCreate entity) {
         // looks for metadata and creates it if not found
