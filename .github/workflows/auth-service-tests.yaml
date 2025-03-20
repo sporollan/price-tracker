@@ -1,19 +1,19 @@
-name: Product Service Tests
+name: Auth Service Tests
 
 on:
   push:
     branches:
       - 'feature/**'
     paths:
-      - 'src/product-service/**' # Trigger only when files in src/product-service are changed
+      - 'src/auth-service/**'
   pull_request:
     branches:
       - develop
     paths:
-      - 'src/product-service/**' # Trigger only when files in src/product-service are changed
+      - 'src/auth-service/**'
 
 jobs:
-  test-product-service:
+  test-auth-service:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,16 +36,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      # Step 4: Start MongoDB using Docker Compose
-      - name: Start MongoDB
-        run: |
-          docker compose up -d product-db
-          docker compose run --rm wait-for-mongo
-
-
-      # Step 5: Run mvnw verify
+      # Step 4: Run mvnw verify
       - name: Run mvnw verify
-        working-directory: src/product-service
+        working-directory: src/auth-service
         run: |
           chmod +x mvnw
           ./mvnw verify

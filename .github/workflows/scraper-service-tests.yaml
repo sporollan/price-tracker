@@ -3,12 +3,12 @@ name: Scraper Service Tests
 on:
   push:
     branches:
-      - main
+      - 'feature/**'
     paths:
       - 'src/scraper-service/**'          # Trigger only when files in src are changed
   pull_request:
     branches:
-      - main
+      - develop
     paths:
       - 'src/scraper-service/**'          # Trigger only when files in src are changed
 
