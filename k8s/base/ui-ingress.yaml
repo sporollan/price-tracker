@@ -1,5 +1,3 @@
-
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -18,29 +16,6 @@ spec:
             name: ui
             port:
               number: 3000
-      - path: /tracked
-        pathType: Prefix
-        backend:
-          service:
-            name: scraper-service
-            port:
-              number: 8001
-
-      - path: /toggle
-        pathType: Prefix
-        backend:
-          service:
-            name: scraper-service
-            port:
-              number: 8001
-
-      - path: /run_scraper
-        pathType: Prefix
-        backend:
-          service:
-            name: scraper-service
-            port:
-              number: 8001
       - path: /product
         pathType: Prefix
         backend:
@@ -60,5 +35,19 @@ spec:
         backend:
           service:
             name: product-service
+            port:
+              number: 8080
+      - path: /user
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-service
+            port:
+              number: 8080
+      - path: /login
+        pathType: Prefix
+        backend:
+          service:
+            name: auth-service
             port:
               number: 8080

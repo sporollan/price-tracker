@@ -49,6 +49,13 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"     # Max 1 CPU core
         envFrom:
           - configMapRef:
               name: app-config
@@ -84,6 +91,13 @@ spec:
         image: mongo
         ports:
         - containerPort: 27017
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+          limits:
+            memory: "512Mi"
+            cpu: "1"     # Max 1 CPU core
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           value: root
