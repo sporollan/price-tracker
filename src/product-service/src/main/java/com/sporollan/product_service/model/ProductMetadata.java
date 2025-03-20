@@ -2,6 +2,8 @@ package com.sporollan.product_service.model;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -16,7 +18,7 @@ public class ProductMetadata {
     private @Id String id;
        
     private String name;
-    private String tracked;
+    private Set<String> tracked;
     private Long dateAdded;
     private String img;
 
@@ -26,7 +28,7 @@ public class ProductMetadata {
     public ProductMetadata() {
         this.dateAdded = Instant.now().toEpochMilli();
     }
-    public ProductMetadata(String name, String tracked, String img) {
+    public ProductMetadata(String name, Set<String> tracked, String img) {
         this.name = name;
         this.tracked = tracked;
         this.img = img;
