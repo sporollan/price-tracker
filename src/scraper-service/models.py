@@ -1,5 +1,14 @@
-from sqlalchemy import Column, Integer, String, Boolean, BigInteger
+from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, BigInteger, Table
+from sqlalchemy.orm import relationship
 from database import Base
+
+
+user_tracked_association = Table(
+    'user_tracked_association', Base.metadata,
+    Column('user_id', String, ForeignKey('user.id'), primary_key=True),
+    Column('tracked_id', Integer, ForeignKey('tracked.id'), primary_key=True)
+)
+
 
 class Tracked(Base):
     __tablename__ = "tracked"
@@ -9,4 +18,13 @@ class Tracked(Base):
     sites = Column(String)
     date_added = Column(BigInteger)
     last_scraped = Column(BigInteger)
-    is_active = Column(Boolean, default=True)
+
+    users = relationship("User", secondary=user_tracked_association, back_populates="tracked_items")
+
+
+class User(Base):
+    __tablename__ = "user"
+    id = Column(String, primary_key=True)
+    tracked_items = relationship("Tracked", secondary=user_tracked_association, back_populates="users")
+
+
