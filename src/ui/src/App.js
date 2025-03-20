@@ -1,29 +1,26 @@
-import './App.css';
-import Tracked from './components/Tracked/Tracked'
-import Products from './components/Products/Products'
-import Header from './components/Header/Header'
-import { useState } from 'react';
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./components/Auth/Login";
+import Register from "./components/Auth/Register";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import Header from "./components/Header/Header"
+import Home from "./components/Home/Home"
+import { useState } from "react";
 
 function App() {
-  const [products, setProducts] = useState([])
-
+  const [userId, setUserId] = useState("");
   return (
-    <div className="main_container">
-        <div className='header'><Header/></div>
-        <div className='body_container'>
-          <div className='left_banner'>
-          </div>
-          <div className='left_container'>
-            <Tracked setProducts={setProducts}/>
-          </div>
-          <div className='right_container'>
-            <Products products={products}/>
-          </div>
-          <div className='right_banner'></div>
-        </div>
-    </div>
+    <Router>
+      <div className="main_container">
+        <Header />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/login" element={<Login setUserId={setUserId}/>} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Home />}/>
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
-export default App;
+export default App

@@ -8,6 +8,8 @@ axios.defaults.baseURL = 'http://ui.local';
 const Tracked = ({setProducts}) => {
     const [trackedProducts, setTrackedProducts] = useState([]);
     const [newTrackedProduct, setNewTrackedProuct] = useState("");
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId"); 
 
     useEffect(() => {
         fetchTrackedProducts();
@@ -16,18 +18,39 @@ const Tracked = ({setProducts}) => {
     const fetchTrackedProducts = async () => {
         try {
             const response = await axios.get(
-                "tracked/?skip=0&limit=100"  // Note: removed leading slash
+                `tracked`,
+                {
+                    params: {
+                        user: userId
+                    },
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
+                }
             );
             setTrackedProducts(response.data);
         }catch (error){
             console.log("error fetching tracked products")
+            console.log(error)
         };
     };
 
     const toggleTrackedProduct = async (event, id) => {
         try {
             await axios.put(
-                `toggle/${id}`  // Note: removed leading slash
+                `toggle`,
+                {},
+                {
+                    params: {
+                        user: userId,
+                        id: id
+                    },
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
+                }
             )
         }catch (error){
             console.log("error toggling product " + id)
@@ -43,10 +66,17 @@ const Tracked = ({setProducts}) => {
         try {
             console.log(newTrackedProduct)
             await axios.post(
-                "tracked",  // Note: removed leading slash
+                "tracked",
                 {
                     name: newTrackedProduct,
-                    sites: "COTO"
+                    sites: "COTO",
+                    users: [userId]
+                },
+                {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
                 }
             )
             setNewTrackedProuct("")
@@ -58,17 +88,27 @@ const Tracked = ({setProducts}) => {
 
     const handleUpdateProducts = async () => {
         try {
-            await axios.post("run_scraper")  // Note: removed leading slash
+            await axios.post(
+                "run_scraper",
+                {},
+                {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
+                }
+            );
         } catch (error){
             console.log("error updating products")
+            alert("error running scraper")
+            alert(token)
         }
     };
 
     const handleFetchProducts = async (event, newProductSearchText) => {
         try {
             const response = await axios.get(
-                `productMetadata/${newProductSearchText}`,  // Note: removed leading slash
-            )
+                `productMetadata/${newProductSearchText}`);
             setProducts(response.data)
         } catch (error){
             console.log("error fetching products")
@@ -90,9 +130,9 @@ const Tracked = ({setProducts}) => {
             <div className='tracked_item_list_container'>
             {trackedProducts.map(
                 (product) => (
-                    <div className='tracked_row'>
-                        <div className='tracked_left' onClick={event => handleFetchProducts(event, product.name)} key={product.name} style={{
-                            textDecoration: product.is_active ? 'none' : 'line-through'
+                    <div className='tracked_row' key={product.name}>
+                        <div className='tracked_left' onClick={event => handleFetchProducts(event, product.name)} style={{
+                            textDecoration: product.is_active ? 'none' : 'hidden'
                         }}>
                             <span>
                                     {product.name}
@@ -102,6 +142,7 @@ const Tracked = ({setProducts}) => {
                             <button onClick={event => toggleTrackedProduct(event, product.id)}>Track</button>
                         </div>
                     </div>
+
                 )
             )}
             </div>
