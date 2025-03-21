@@ -3,4 +3,6 @@ resources:
   - product-service-deployment.yaml
   - scraper-service-deployment.yaml
   - ui-deployment.yaml
-  - ingress.yaml
+  - ui-ingress.yaml
+  - protected-ingress.yaml
+  - auth-service-deployment.yaml

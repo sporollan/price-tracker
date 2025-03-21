@@ -30,6 +30,10 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 3000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
         envFrom:
           - configMapRef:
               name: app-config

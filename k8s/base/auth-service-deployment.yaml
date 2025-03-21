@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-configmap
+data:
+  # For PostgreSQL container
+  POSTGRES_DB: users
+  POSTGRES_USER: ps_user
+  POSTGRES_PASSWORD: SecurePassword
+  # For Spring Boot
+  SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/users
+  SPRING_DATASOURCE_USERNAME: ps_user
+  SPRING_DATASOURCE_PASSWORD: SecurePassword
+  SPRING_JPA_HIBERNATE_DDL-AUTO: update
+  JWT_EXPIRATION_TIME_MILLIS: "36000000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+spec:
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: auth-service:dev
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 120 
+          periodSeconds: 5        
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 10
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+        env:
+          - name: JWT_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: jwt-secret
+                key: JWT_SECRET_KEY
+        envFrom:
+          - configMapRef:
+              name: app-config
+          - configMapRef:
+              name: auth-configmap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db
+spec:
+  type: NodePort
+  selector:
+    app: auth-db
+  ports:
+    - protocol: TCP
+      port: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-db
+  template:
+    metadata:
+      labels:
+        app: auth-db
+    spec:
+      containers:
+      - name: auth-db
+        image: postgres
+        ports:
+        - containerPort: 5432
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "500m"
+        envFrom:
+        - configMapRef:
+            name: auth-configmap 
+        volumeMounts:
+        - name: postgresqlauthdata
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgresqlauthdata
+        persistentVolumeClaim:
+          claimName: postgresqlauthdata
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresqlauthdata
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

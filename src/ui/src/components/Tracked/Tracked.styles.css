@@ -75,6 +75,10 @@
     padding-top: 5px;
 }
 
+.tracked_row.hidden{
+    display:none;
+}
+
 
 .tracked_left {
     width: 75%;

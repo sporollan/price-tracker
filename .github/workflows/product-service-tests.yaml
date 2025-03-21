@@ -3,12 +3,12 @@ name: Product Service Tests
 on:
   push:
     branches:
-      - main
+      - 'feature/**'
     paths:
       - 'src/product-service/**' # Trigger only when files in src/product-service are changed
   pull_request:
     branches:
-      - main
+      - develop
     paths:
       - 'src/product-service/**' # Trigger only when files in src/product-service are changed
 
@@ -40,8 +40,8 @@ jobs:
       - name: Start MongoDB
         run: |
           docker compose up -d product-db
-          echo "Waiting for MongoDB to start..."
-          sleep 10 # Give MongoDB time to initialize
+          docker compose run --rm wait-for-mongo
+
 
       # Step 5: Run mvnw verify
       - name: Run mvnw verify
