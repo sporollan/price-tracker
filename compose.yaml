@@ -23,6 +23,11 @@ services:
 #      MONGO_INITDB_ROOT_USERNAME: root
 #      MONGO_INITDB_ROOT_PASSWORD: example
 #      MONGO_INITDB_DATABASE: products
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 10s
+      retries: 5
     volumes:
       - ./src/product-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodbdata:/data/db
