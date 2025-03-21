@@ -26,14 +26,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 public class ProductService {
 
-    private final ProductMetadataService productMetadataService;
     private final ProductRepository repo;
     private final ProductMetadataRepository repoMetadata;
 
-    public ProductService(ProductRepository repo, ProductMetadataRepository repoMetadata, ProductMetadataService productMetadataService) {
+    public ProductService(ProductRepository repo, ProductMetadataRepository repoMetadata) {
         this.repo = repo;
         this.repoMetadata = repoMetadata;
-        this.productMetadataService = productMetadataService;
     }
 
     public void dropDB() {

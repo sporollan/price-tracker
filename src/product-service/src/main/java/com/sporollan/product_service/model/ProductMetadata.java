@@ -2,7 +2,6 @@ package com.sporollan.product_service.model;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.annotation.Id;
