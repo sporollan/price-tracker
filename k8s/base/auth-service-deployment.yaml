@@ -6,11 +6,9 @@ data:
   # For PostgreSQL container
   POSTGRES_DB: users
   POSTGRES_USER: ps_user
-  POSTGRES_PASSWORD: SecurePassword
   # For Spring Boot
   SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/users
   SPRING_DATASOURCE_USERNAME: ps_user
-  SPRING_DATASOURCE_PASSWORD: SecurePassword
   SPRING_JPA_HIBERNATE_DDL-AUTO: update
   JWT_EXPIRATION_TIME_MILLIS: "36000000"
 ---
@@ -60,14 +58,22 @@ spec:
           periodSeconds: 10
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "500m"
+            memory: "512Mi"
+            cpu: "256m"
+          limits:
+            memory: "1024Mi"
+            cpu: "512m"
         env:
           - name: JWT_SECRET_KEY
             valueFrom:
               secretKeyRef:
                 name: jwt-secret
                 key: JWT_SECRET_KEY
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: auth-secrets
+                key: SPRING_DATASOURCE_PASSWORD
         envFrom:
           - configMapRef:
               name: app-config
@@ -107,8 +113,17 @@ spec:
         - containerPort: 5432
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "500m"
+            memory: "128Mi"
+            cpu: "128m"
+          limits:
+            memory: "128Mi"
+            cpu: "128m"
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: auth-secrets
+                key: POSTGRES_PASSWORD
         envFrom:
         - configMapRef:
             name: auth-configmap 

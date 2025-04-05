@@ -1,5 +1,8 @@
 resources:
   - ../../base
+  - auth-secrets-sealed.yaml
+  - product-secrets-sealed.yaml
+  - scraper-secrets-sealed.yaml
 
 patches:
   - path: product-service-replica-patch.yaml
