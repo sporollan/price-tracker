@@ -33,7 +33,6 @@ const Login = ({setUserId}) => {
       }
     } catch (error) {
       console.error(error);
-      alert("Login failed")
     }
   };
 
