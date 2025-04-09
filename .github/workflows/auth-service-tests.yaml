@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'feature/**'
+      - 'develop'
     paths:
       - 'src/auth-service/**'
   pull_request:

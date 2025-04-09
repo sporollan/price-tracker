@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'feature/**'
+      - 'develop'
     paths:
       - 'src/scraper-service/**'          # Trigger only when files in src are changed
   pull_request:

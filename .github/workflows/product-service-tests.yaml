@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - 'feature/**'
+      - 'develop'
     paths:
       - 'src/product-service/**' # Trigger only when files in src/product-service are changed
   pull_request:
