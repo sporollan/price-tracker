@@ -76,6 +76,8 @@ public class ProductService {
     @PostMapping("/product")
     public ResponseEntity<List<ProductDto>> createProduct(@RequestBody List<ProductCreate> entityBatch) {
         List<Product> savedProducts = new ArrayList<>();
+        boolean atLeastOneCreated = false;
+        boolean atLeastOneDuplicate = false;
         try {
             for (ProductCreate entity : entityBatch) {
                 ProductMetadata db_md = repoMetadata.findByName(entity.getName());
@@ -101,7 +103,8 @@ public class ProductService {
                         db_md, entity.getSite(), startMillis, endMillis
                     );
                     if (!existingInDb.isEmpty()) {
-                        throw new DuplicateProductException("Product already exists for today");
+                        atLeastOneDuplicate = true;
+                        continue;
                     }
     
                     // Create a final reference for use in lambda
@@ -115,7 +118,8 @@ public class ProductService {
                         p.getDateAdded() < endMillis
                     );
                     if (existsInBatch) {
-                        throw new DuplicateProductException("Duplicate in current request");
+                        atLeastOneDuplicate = true;
+                        continue;
                     }
     
                     // Update metadata
@@ -125,12 +129,16 @@ public class ProductService {
                 }
     
                 savedProducts.add(new Product(db_md, entity.getSite(), entity.getPrice()));
+                atLeastOneCreated = true;
             }
     
             List<Product> createdProducts = repo.saveAll(savedProducts);
             List<ProductDto> productDtos = createdProducts.stream()
                 .map(p -> new ProductDto(p.getId(), p.getProductMetadata().getId(), p.getSite(), p.getPrice(), p.getDateAdded()))
                 .collect(Collectors.toList());
+            if(!atLeastOneCreated && atLeastOneDuplicate) {
+                throw new DuplicateProductException(null);
+            }
             return ResponseEntity.status(HttpStatus.CREATED).body(productDtos);
         } catch (DuplicateProductException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
