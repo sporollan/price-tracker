@@ -2,11 +2,9 @@ package com.sporollan.product_service.data;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.sporollan.product_service.model.Product;
 
-public interface ProductRepository extends MongoRepository<Product, String> {
-    List<Product> findByProductMetadataId(@Param("productMetadataId") String productMetadataId);
+public interface ProductRepository extends JpaRepository<Product, String> {
+    List<Product> findByProductMetadataId(String productMetadataId);
 }

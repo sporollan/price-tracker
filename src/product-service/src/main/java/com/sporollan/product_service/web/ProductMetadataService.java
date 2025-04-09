@@ -3,10 +3,12 @@ package com.sporollan.product_service.web;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sporollan.product_service.data.ProductMetadataRepository;
+import com.sporollan.product_service.dto.ProductMetadataDto;
 import com.sporollan.product_service.model.ProductMetadata;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,20 +26,34 @@ public class ProductMetadataService {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/productMetadata")
-    public List<ProductMetadata> getProducts() {
-        return repoMetadata.findAll();
+    public List<ProductMetadataDto> getProducts() {
+        return repoMetadata.findAll().stream()
+            .map(this::mapToDto)
+            .collect(Collectors.toList());
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/productMetadata/{tracked}")
-    public ResponseEntity<List<ProductMetadata>> getProduct(@PathVariable String tracked) {
-        List<ProductMetadata> db_p= repoMetadata.findByTracked(tracked);
-        if(db_p.isEmpty()) {
+    public ResponseEntity<List<ProductMetadataDto>> getProduct(@PathVariable String tracked) {
+        List<ProductMetadata> db_p = repoMetadata.findByTrackedContaining(tracked);
+        if (db_p.isEmpty()) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Collections.emptyList());
         }
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(db_p);
+
+        List<ProductMetadataDto> dtoList = db_p.stream()
+            .map(this::mapToDto)
+            .collect(Collectors.toList());
+
+        return ResponseEntity.status(HttpStatus.OK).body(dtoList);
     }
-  
+    private ProductMetadataDto mapToDto(ProductMetadata metadata) {
+        return new ProductMetadataDto(
+            metadata.getId(),
+            metadata.getName(),
+            metadata.getTracked(),
+            metadata.getDateAdded(),
+            metadata.getImg()
+        );
+    }
 }
