@@ -1,8 +1,9 @@
 resources:
   - ../../base
   - auth-secrets-sealed.yaml
-  - product-secrets-sealed.yaml
-  - scraper-secrets-sealed.yaml
+  - database-secrets-sealed.yaml
+  - database.yaml
+  - init-db-script.yaml
 
 patches:
   - path: product-service-replica-patch.yaml
@@ -17,9 +18,19 @@ patches:
     target:
       kind: Deployment
       name: scraper-service
-
-configMapGenerator:
-  - name: app-config
-    behavior: replace
-    literals:
-      - ENVIRONMENT=development
+  - path: app-config-patch.yaml
+    target:
+      kind: ConfigMap
+      name: app-config
+  - path: auth-configmap-patch.yaml
+    target:
+      kind: ConfigMap
+      name: auth-configmap
+  - path: product-configmap-patch.yaml
+    target:
+      kind: ConfigMap
+      name: product-configmap
+  - path: database-configmap-patch.yaml
+    target:
+      kind: ConfigMap
+      name: database-configmap

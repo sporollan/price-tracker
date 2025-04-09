@@ -1,33 +1,4 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-          name: mongo-init
-data:
-  mongo-init.js: |
-    db.createUser(
-            {
-                user: process.env.MONGO_USERNAME,
-                pwd: process.env.MONGO_USER_PASSWORD,
-                roles: [
-                    {
-                        role: "readWrite",
-                        db: "products"
-                    }
-                ]
-            }
-    );
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: product-configmap
-data:
-  MONGO_USERNAME: user1
-  MONGO_DB: products
-  MONGO_INITDB_DATABASE: products
-  MONGO_INITDB_ROOT_USERNAME: admin
----
-apiVersion: v1
 kind: Service
 metadata:
   name: product-service
@@ -65,93 +36,25 @@ spec:
             cpu: "256m"
           limits:
             memory: "512Mi"
-            cpu: "512m"     # Max 1 CPU core
+            cpu: "512m"
         env:
-          - name: MONGO_USER_PASSWORD
+          - name: SPRING_DATASOURCE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: product-secrets
-                key: MONGO_USER_PASSWORD
+                name: database-secrets
+                key: DB_PASSWORD
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              configMapKeyRef:
+                name: product-configmap
+                key: PRODUCTS_USER
+          - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+            valueFrom:
+              configMapKeyRef:
+                name: database-configmap
+                key: DDL-AUTO
         envFrom:
           - configMapRef:
               name: app-config
           - configMapRef:
               name: product-configmap
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: product-db
-spec:
-  selector:
-    app: product-db
-  ports:
-    - protocol: TCP
-      port: 27017
-      targetPort: 27017
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: product-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: product-db
-  template:
-    metadata:
-      labels:
-        app: product-db
-    spec:
-      containers:
-      - name: product-db
-        image: mongo
-        ports:
-        - containerPort: 27017
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "500m"
-          limits:
-            memory: "512Mi"
-            cpu: "1"     # Max 1 CPU core
-        env:
-          - name: MONGO_USER_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: product-secrets
-                key: MONGO_USER_PASSWORD
-          - name: MONGO_INITDB_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: product-secrets
-                key: MONGO_USER_PASSWORD
-        envFrom:
-        - configMapRef:
-            name: product-configmap
-        volumeMounts:
-        - name: mongo-init
-          mountPath: /docker-entrypoint-initdb.d/mongo-init.js
-          subPath: mongo-init.js
-        - name: mongodbdata
-          mountPath: /data/db
-      volumes:
-      - name: mongo-init
-        configMap:
-          name: mongo-init
-      - name: mongodbdata
-        persistentVolumeClaim:
-          claimName: mongodbdata
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mongodbdata
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
----

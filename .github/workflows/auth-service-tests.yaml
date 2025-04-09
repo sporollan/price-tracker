@@ -28,23 +28,9 @@ jobs:
           java-version: '22'
           distribution: 'temurin'
 
-      # Step 3: Set up Docker and Docker Compose
-      - name: Set up Docker
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      # Step 4: Run mvnw verify
+      # Step 3: Run mvnw verify
       - name: Run mvnw verify
         working-directory: src/auth-service
         run: |
           chmod +x mvnw
           ./mvnw verify
-
-      # Step 6: Clean up
-      - name: Stop and remove containers
-        if: always() # Ensure cleanup happens even if previous steps fail
-        run: |
-          docker compose down

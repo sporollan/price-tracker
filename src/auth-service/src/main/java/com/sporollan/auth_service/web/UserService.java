@@ -91,14 +91,10 @@ public class UserService {
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 throw new IllegalArgumentException("Missing or invalid Authorization header");
             }
-            //String token = authHeader.replace("Bearer ", "");
             String token = authHeader.substring(7); // Remove "Bearer " prefix
-            System.out.println(token);
             jwtService.validateToken(token); // Full validation via JwtService
-            System.out.println("wtf");
             return ResponseEntity.ok().build();
         } catch (JwtException e) {
-            System.out.println("Rejected");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }

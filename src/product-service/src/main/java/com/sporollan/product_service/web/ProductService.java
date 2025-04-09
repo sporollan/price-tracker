@@ -4,15 +4,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sporollan.product_service.data.ProductMetadataRepository;
 import com.sporollan.product_service.data.ProductRepository;
+import com.sporollan.product_service.dto.ProductDto;
+import com.sporollan.product_service.dto.ProductUpdateRequest;
 import com.sporollan.product_service.model.Product;
 import com.sporollan.product_service.model.ProductCreate;
 import com.sporollan.product_service.model.ProductMetadata;
+import com.sporollan.product_service.exception.ProductMetadataNotFoundException;
 import com.sporollan.product_service.exception.ProductNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +54,21 @@ public class ProductService {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/product/{id}")
-    public List<Product> getProduct(@PathVariable String id) {
+    public List<ProductDto> getProduct(@PathVariable String id) {
 
-        return repo.findByProductMetadataId(id);
+        List<Product> products = repo.findByProductMetadataId(id);
+        return products.stream().map(product -> new ProductDto(
+                product.getId(),
+                product.getProductMetadata() != null ? product.getProductMetadata().getId() : null,
+                product.getSite(),
+                product.getPrice(),
+                product.getDateAdded()
+        )).collect(Collectors.toList());
+    
     }
     
     @PostMapping("/product")
-    public ResponseEntity<List<Product>> createProduct(@RequestBody List<ProductCreate> entityBatch) {
+    public ResponseEntity<List<ProductDto>> createProduct(@RequestBody List<ProductCreate> entityBatch) {
         // looks for metadata and creates it if not found
         List<Product> savedProducts = new ArrayList<>();
         try 
@@ -78,13 +90,21 @@ public class ProductService {
                 }
 
                 savedProducts.add(new Product(
-                    db_md.getId(),
+                    db_md,
                     entity.getSite(),
                     entity.getPrice()
                     ));
+                
             }
             List<Product> createdProducts = repo.saveAll(savedProducts);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdProducts);
+            List<ProductDto> productDtos = createdProducts.stream().map(product -> new ProductDto(
+                product.getId(),
+                product.getProductMetadata() != null ? product.getProductMetadata().getId() : null,
+                product.getSite(),
+                product.getPrice(),
+                product.getDateAdded()
+            )).collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.CREATED).body(productDtos);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Collections.emptyList());
@@ -92,12 +112,14 @@ public class ProductService {
     }
 
     @PutMapping("/product/{id}")
-    public Product putMethodName(@PathVariable String id, @RequestBody Product entity) {
+    public Product putMethodName(@PathVariable String id, @RequestBody ProductUpdateRequest updateRequest) {
         return repo.findById(id).map(
             product -> {
-                product.setProductMetadataId(entity.getProductMetadataId());
-                product.setSite(entity.getSite());
-                product.setPrice(entity.getPrice());
+                ProductMetadata metadata = repoMetadata.findById(updateRequest.getProductMetadataId())
+                .orElseThrow(() -> new ProductMetadataNotFoundException(updateRequest.getProductMetadataId()));
+                product.setProductMetadata(metadata);
+                product.setSite(updateRequest.getSite());
+                product.setPrice(updateRequest.getPrice());
 
                 return product;
             })

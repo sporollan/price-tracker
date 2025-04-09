@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
-import com.sporollan.product_service.model.Product;
+import com.sporollan.product_service.dto.ProductDto;
+import com.sporollan.product_service.dto.ProductMetadataDto;
 import com.sporollan.product_service.model.ProductCreate;
-import com.sporollan.product_service.model.ProductMetadata;
 import com.sporollan.product_service.web.ProductMetadataService;
 import com.sporollan.product_service.web.ProductService;
+
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class ProductServiceTests {
@@ -32,6 +34,7 @@ public class ProductServiceTests {
         assert greeting.equals("Hello, World!");
     }
 
+    @Transactional
     @Test
     public void testCreateProduct() {
         // drop DB before test
@@ -59,17 +62,17 @@ public class ProductServiceTests {
         products.add(product);
         products.add(product2);
         // create Product, also creates metadata
-        ResponseEntity<List<Product>> createResponse = productService
+        ResponseEntity<List<ProductDto>> createResponse = productService
                                     .createProduct(products);
         // get metadata
-        ResponseEntity<List<ProductMetadata>> metadataResponse = productMetadataService
+        ResponseEntity<List<ProductMetadataDto>> metadataResponse = productMetadataService
                                             .getProduct("Cafe");
         assert metadataResponse.getStatusCode().equals(HttpStatus.OK);
-        List<ProductMetadata> metadata = metadataResponse.getBody();
-        ProductMetadata md = metadata.get(0);
+        List<ProductMetadataDto> metadata = metadataResponse.getBody();
+        ProductMetadataDto md = metadata.get(0);
         // assert metadata is created and product has correct id
-        List<Product> productResponse = productService.getProduct(md.getId());
-        Product p = productResponse.get(0);
+        List<ProductDto> productResponse = productService.getProduct(md.getId());
+        ProductDto p = productResponse.get(0);
         assert p.getProductMetadataId().equals(md.getId());
         assert md.getTracked().equals(new HashSet<>(Collections.singleton("Cafe")));
         assert md.getName().equals("Producto Cafe 100g");
@@ -79,11 +82,11 @@ public class ProductServiceTests {
 
         List<ProductCreate> products2 = new ArrayList<ProductCreate>();
         products2.add(product3);
-        ResponseEntity<List<Product>> createResponse2 = productService
+        ResponseEntity<List<ProductDto>> createResponse2 = productService
                                     .createProduct(products2);
         assert createResponse2.getStatusCode().equals(HttpStatus.CREATED);
         assert createResponse2.getBody().size() == 1;
-        ResponseEntity<List<ProductMetadata>> metadataResponse2 = productMetadataService
+        ResponseEntity<List<ProductMetadataDto>> metadataResponse2 = productMetadataService
                                             .getProduct("Cafe Grano");
         assert metadataResponse2.getStatusCode().equals(HttpStatus.OK);
         
