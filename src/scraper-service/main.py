@@ -23,7 +23,7 @@ scraper_locks = {}
 
 # Database Setup
 ENV=os.getenv('ENV', 'test')
-if ENV == 'development':
+if ENV == 'dev' or ENV == 'prod':
     engine = create_engine(DATABASE_URL)
 elif ENV == 'test':
     engine = create_engine(
