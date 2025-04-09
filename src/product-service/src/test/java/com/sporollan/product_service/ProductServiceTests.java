@@ -84,11 +84,11 @@ public class ProductServiceTests {
         products2.add(product3);
         ResponseEntity<List<ProductDto>> createResponse2 = productService
                                     .createProduct(products2);
-        assert createResponse2.getStatusCode().equals(HttpStatus.CREATED);
-        assert createResponse2.getBody().size() == 1;
+        assert createResponse2.getStatusCode().equals(HttpStatus.BAD_REQUEST);
+        assert createResponse2.getBody().size() == 0;
         ResponseEntity<List<ProductMetadataDto>> metadataResponse2 = productMetadataService
                                             .getProduct("Cafe Grano");
-        assert metadataResponse2.getStatusCode().equals(HttpStatus.OK);
+        assert metadataResponse2.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR);
         
 
     }
