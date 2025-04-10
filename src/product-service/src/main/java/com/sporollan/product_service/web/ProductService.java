@@ -9,6 +9,9 @@ import com.sporollan.product_service.dto.ProductUpdateRequest;
 import com.sporollan.product_service.model.Product;
 import com.sporollan.product_service.model.ProductCreate;
 import com.sporollan.product_service.model.ProductMetadata;
+
+import jakarta.transaction.Transactional;
+
 import com.sporollan.product_service.exception.ProductMetadataNotFoundException;
 import com.sporollan.product_service.exception.ProductNotFoundException;
 
@@ -74,6 +77,7 @@ public class ProductService {
     }
     
     @PostMapping("/product")
+    @Transactional
     public ResponseEntity<List<ProductDto>> createProduct(@RequestBody List<ProductCreate> entityBatch) {
         List<Product> savedProducts = new ArrayList<>();
         boolean atLeastOneCreated = false;
@@ -89,46 +93,45 @@ public class ProductService {
                         entity.getImg()
                     ));
                 } else {
-                    // Check for existing entries in DB and current batch
-                    Instant now = Instant.now();
-                    ZoneId zoneId = ZoneId.systemDefault();
-                    LocalDate today = now.atZone(zoneId).toLocalDate();
-                    Instant startOfDay = today.atStartOfDay(zoneId).toInstant();
-                    Instant endOfDay = startOfDay.plus(1, ChronoUnit.DAYS);
-                    long startMillis = startOfDay.toEpochMilli();
-                    long endMillis = endOfDay.toEpochMilli();
-    
-                    // Check database
-                    List<Product> existingInDb = repo.findByProductMetadataAndSiteAndDateAddedBetween(
-                        db_md, entity.getSite(), startMillis, endMillis
-                    );
-                    if (!existingInDb.isEmpty()) {
-                        atLeastOneDuplicate = true;
-                        continue;
-                    }
-    
-                    // Create a final reference for use in lambda
-                    final ProductMetadata finalDbMd = db_md;
-    
-                    // Check current batch
-                    boolean existsInBatch = savedProducts.stream().anyMatch(p ->
-                        p.getProductMetadata().equals(finalDbMd) && // Use final variable here
-                        p.getSite().equals(entity.getSite()) &&
-                        p.getDateAdded() >= startMillis &&
-                        p.getDateAdded() < endMillis
-                    );
-                    if (existsInBatch) {
-                        atLeastOneDuplicate = true;
-                        continue;
-                    }
-    
-                    // Update metadata
+                    // Update metadata if it exists
                     db_md.getTracked().add(entity.getTracked());
                     db_md.setImg(entity.getImg());
                     db_md = repoMetadata.save(db_md);
                 }
-    
-                savedProducts.add(new Product(db_md, entity.getSite(), entity.getPrice()));
+                // Check for existing entries in DB and current batch
+                Instant now = Instant.now();
+                ZoneId zoneId = ZoneId.systemDefault();
+                LocalDate today = now.atZone(zoneId).toLocalDate();
+                Instant startOfDay = today.atStartOfDay(zoneId).toInstant();
+                Instant endOfDay = startOfDay.plus(1, ChronoUnit.DAYS);
+                long startMillis = startOfDay.toEpochMilli();
+                long endMillis = endOfDay.toEpochMilli();
+
+                // Check database
+                List<Product> existingInDb = repo.findByProductMetadataAndSiteAndDateAddedBetween(
+                    db_md, entity.getSite(), startMillis, endMillis
+                );
+                if (!existingInDb.isEmpty()) {
+                    atLeastOneDuplicate = true;
+
+                    continue;
+                }
+                // Create a final reference for use in lambda
+                final ProductMetadata finalDbMd = db_md;
+
+                // Check current batch
+                boolean existsInBatch = savedProducts.stream().anyMatch(p ->
+                    p.getProductMetadata().equals(finalDbMd) && // Use final variable here
+                    p.getSite().equals(entity.getSite()) &&
+                    p.getDateAdded() >= startMillis &&
+                    p.getDateAdded() < endMillis
+                );
+                if (existsInBatch) {
+                    atLeastOneDuplicate = true;
+                    continue;
+                }
+                Product newProduct = new Product(db_md, entity.getSite(), entity.getPrice());
+                savedProducts.add(newProduct);
                 atLeastOneCreated = true;
             }
     
@@ -143,6 +146,7 @@ public class ProductService {
         } catch (DuplicateProductException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
     }

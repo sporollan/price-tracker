@@ -37,7 +37,7 @@ public class ProductMetadataService {
     public ResponseEntity<List<ProductMetadataDto>> getProduct(@PathVariable String tracked) {
         List<ProductMetadata> db_p = repoMetadata.findByTrackedContaining(tracked);
         if (db_p.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(Collections.emptyList());
         }
 
