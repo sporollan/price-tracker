@@ -1,6 +1,4 @@
-package com.sporollan.product_service.web;
-
-import org.springframework.web.bind.annotation.RestController;
+package com.sporollan.product_service.service;
 
 import com.sporollan.product_service.data.ProductMetadataRepository;
 import com.sporollan.product_service.data.ProductRepository;
@@ -27,16 +25,11 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import com.sporollan.product_service.exception.DuplicateProductException;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.stereotype.Service;
 
-@RestController
+
+@Service
+@Transactional
 public class ProductService {
 
     private final ProductRepository repo;
@@ -47,23 +40,11 @@ public class ProductService {
         this.repoMetadata = repoMetadata;
     }
 
-    public void dropDB() {
-        repo.deleteAll();
-        repoMetadata.deleteAll();
-    }
-    @GetMapping("/")
     public String greeting() {
         return "Hello, World!";
     }
 
-    @GetMapping("/product")
-    public List<Product> getProducts() {
-        return repo.findAll();
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/product/{id}")
-    public List<ProductDto> getProduct(@PathVariable String id) {
+    public List<ProductDto> getProductById(String id) {
 
         List<Product> products = repo.findByProductMetadataId(id);
         return products.stream().map(product -> new ProductDto(
@@ -76,9 +57,7 @@ public class ProductService {
     
     }
     
-    @PostMapping("/product")
-    @Transactional
-    public ResponseEntity<List<ProductDto>> createProduct(@RequestBody List<ProductCreate> entityBatch) {
+    public List<ProductDto> createProduct(List<ProductCreate> entityBatch) {
         List<Product> savedProducts = new ArrayList<>();
         boolean atLeastOneCreated = false;
         boolean atLeastOneDuplicate = false;
@@ -142,28 +121,14 @@ public class ProductService {
             if(!atLeastOneCreated && atLeastOneDuplicate) {
                 throw new DuplicateProductException(null);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(productDtos);
+            return productDtos;
+            // Let Controller handle exceptions
         } catch (DuplicateProductException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+            throw e;
         }
     }
 
-    @PutMapping("/product/{id}")
-    public Product putMethodName(@PathVariable String id, @RequestBody ProductUpdateRequest updateRequest) {
-        return repo.findById(id).map(
-            product -> {
-                ProductMetadata metadata = repoMetadata.findById(updateRequest.getProductMetadataId())
-                .orElseThrow(() -> new ProductMetadataNotFoundException(updateRequest.getProductMetadataId()));
-                product.setProductMetadata(metadata);
-                product.setSite(updateRequest.getSite());
-                product.setPrice(updateRequest.getPrice());
-
-                return product;
-            })
-            .orElseThrow(() -> new ProductNotFoundException(id));
-    }    
-    
 }

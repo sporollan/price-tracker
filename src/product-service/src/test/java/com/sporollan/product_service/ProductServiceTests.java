@@ -1,11 +1,9 @@
 package com.sporollan.product_service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -20,8 +18,8 @@ import com.sporollan.product_service.dto.ProductMetadataDto;
 import com.sporollan.product_service.model.Product;
 import com.sporollan.product_service.model.ProductCreate;
 import com.sporollan.product_service.model.ProductMetadata;
-import com.sporollan.product_service.web.ProductMetadataService;
-import com.sporollan.product_service.web.ProductService;
+import com.sporollan.product_service.web.ProductMetadataController;
+import com.sporollan.product_service.web.ProductController;
 
 import jakarta.transaction.Transactional;
 
@@ -30,9 +28,9 @@ import jakarta.transaction.Transactional;
 public class ProductServiceTests {
 
     @Autowired
-    private ProductService productService;
+    private ProductController productService;
     @Autowired
-    private ProductMetadataService productMetadataService;
+    private ProductMetadataController productMetadataService;
     private final ProductRepository repo;
     private final ProductMetadataRepository repoMetadata;
     
@@ -79,13 +77,13 @@ public class ProductServiceTests {
                                     .createProduct(products);
         // get metadata
         ResponseEntity<List<ProductMetadataDto>> metadataResponse = productMetadataService
-                                            .getProduct("Cafe");
+                                            .getByTracked("Cafe");
         assert metadataResponse.getStatusCode().equals(HttpStatus.OK);
 
         // assert metadata is created and product has correct id
         List<ProductMetadataDto> metadata = metadataResponse.getBody();
         ProductMetadataDto md = metadata.get(0);
-        List<ProductDto> productResponse = productService.getProduct(md.getId());
+        List<ProductDto> productResponse = productService.getProductById(md.getId());
         ProductDto p = productResponse.get(0);
         assert p.getProductMetadataId().equals(md.getId());
         assert md.getTracked().equals(new HashSet<>(Collections.singleton("Cafe")));
@@ -101,7 +99,7 @@ public class ProductServiceTests {
         assert createResponse2.getStatusCode().equals(HttpStatus.BAD_REQUEST);
         assert createResponse2.getBody().size() == 0;
         ResponseEntity<List<ProductMetadataDto>> metadataResponse2 = productMetadataService
-                                            .getProduct("Cafe Grano");
+                                            .getByTracked("Cafe Grano");
         // Tracked should link to product even if it was duplicate
         assert metadataResponse2.getStatusCode().equals(HttpStatus.OK);
     }
