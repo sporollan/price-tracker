@@ -32,11 +32,11 @@ spec:
         - containerPort: 8001
         resources:
           requests:
-            cpu: "1"
-            memory: "2Gi"
+            memory: "1024Mi"
+            cpu: "1024m"
           limits:
-            cpu: "2"
-            memory: "4Gi"
+            memory: "4096Mi"
+            cpu: "4096m"
         env:
           - name: DB_PASSWORD
             valueFrom:
