@@ -116,76 +116,96 @@ class Scraper():
         self.initialize_driver()
 
         for site in paths.keys():
-            # Start Scraping Product on each site
+            # Skip sites not included in the argument
             if site not in sites:
                 continue
 
-            page=0
             product_count = 0
-            no_products_found = 0
             products_batch = []
+            page = 1  # Track the current page number
 
-            while page < 20 and no_products_found < 2:
-                url = self.build_url(name=name, start=page*12)
-                logger.info(f"Looking at URL: {url}")
-                page += 1
-        
+            # Start by loading the initial search URL
+            url = self.build_url(name=name, start=0)
+            logger.info(f"Loading initial URL: {url}")
+            self.driver.get(url)
+            time.sleep(1)  # Allow the page to load
+            
+            while True:
+                logger.info(f"Scraping page {page} on site: {site}")
+
                 try:
-                    # Go to URL
-                    self.driver.get(url)
+                    WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, "product-image"))
+                    )
+                except TimeoutException as e:
+                    logger.warning(f"Timeout waiting for products on page {page}: {e}")
+                    break
 
-                    # Wait for products to load
+                products = self.driver.find_elements(By.CLASS_NAME, "producto-card")
+                if not products:
+                    logger.info(f"No products found on page {page}")
+                    break
+
+                # Process the found products
+                for product in products:
                     try:
-                        WebDriverWait(self.driver, 10).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, "product-image"))
-                        )
-                    except TimeoutException as e:
-                        logger.warning(f"Timeout waiting for products on page {page}: {e}")
-                        no_products_found += 1
-                        continue
+                        product_name = product.find_element(By.CLASS_NAME, "nombre-producto").text
+                        price_element = product.find_element(By.CLASS_NAME, "card-title")
+                        price = price_element.text if price_element else ""
+                        image_element = product.find_element(By.CLASS_NAME, "product-image")
+                        img = image_element.get_attribute("src") if image_element else ""
+
+                        if price:
+                            product_count += 1
+                            new_product = {
+                                'name': product_name,
+                                'site': site,
+                                'tracked': name,
+                                'price': self.to_price(price),
+                                'img': img,
+                            }
+                            products_batch.append(new_product)
+
+                            if len(products_batch) >= BATCH_SIZE:
+                                for endpoint in self.endpoints:
+                                    self.post_products_batch(endpoint, products_batch)
+                                products_batch = []
                     except Exception as e:
-                        logger.warning(f"No products found on page {page}: {str(e)}")
-                        no_products_found += 1
-                        continue
+                        logger.error(f"Error processing product on page {page}: {str(e)}")
 
-                    # Extract product data
-                    products = self.driver.find_elements(By.CLASS_NAME, "producto-card")
+                # Log current URL before clicking next
+                logger.info("Current URL before clicking next: " + self.driver.current_url)
 
-                    if not products:
-                        logger.info(f"No products found on page {page}")
-                        no_products_found += 1
-                        continue
-
-                    no_products_found = 0
-
-                    for product in products:
-                        try:
-                            product_name = product.find_element(By.CLASS_NAME, "nombre-producto").text
-                            price_element = product.find_element(By.CLASS_NAME, "card-title")
-                            price = price_element.text if price_element else ""
-                            image_element = product.find_element(By.CLASS_NAME, "product-image")
-                            img = image_element.get_attribute("src") if image_element else ""
-
-                            if price:
-                                product_count += 1
-                                new_product = {
-                                    'name': product_name,
-                                    'site': site,
-                                    'tracked': name,
-                                    'price': self.to_price(price),
-                                    'img': img,
-                                }
-                                products_batch.append(new_product)
-
-                                if len(products_batch) >= BATCH_SIZE:
-                                    for endpoint in self.endpoints:
-                                        self.post_products_batch(endpoint, products_batch)
-                                    products_batch = []
-                        except Exception as e:
-                            logger.error(f"Error processing product: {str(e)}")
+                # Locate and click the "next" button using XPath
+                try:
+                    next_button = WebDriverWait(self.driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//a[contains(@class, 'page-back-next') and contains(text(), 'Siguiente')]"))
+                    )
+                    
+                    # 1. Scroll to element with explicit alignment
+                    self.driver.execute_script("arguments[0].scrollIntoView({block: 'center', inline: 'nearest'});", next_button)
+                    
+                    # 2. Wait for any overlays/stale references to clear
                     time.sleep(0.5)
+                    
+                    # 3. Use JavaScript click to bypass overlay issues
+                    self.driver.execute_script("arguments[0].click();", next_button)
+                    
+                    # 4. Wait for page load
+                    WebDriverWait(self.driver, 10).until(
+                        EC.staleness_of(next_button)
+                    )
+                    
+                    page += 1
+                    logger.info(f"Successfully navigated to page {page}")
+                except TimeoutException:
+                    logger.info(f"No next button found on page {page}. Ending scrape.")
+                    break
                 except Exception as e:
-                    logger.error(f"Error processing page {page}: {str(e)}")
+                    logger.error(f"Error clicking next: {str(e)}")
+                    break
+
+            # Post any remaining products after finishing pagination
             if products_batch:
                 for endpoint in self.endpoints:
                     self.post_products_batch(endpoint, products_batch)
