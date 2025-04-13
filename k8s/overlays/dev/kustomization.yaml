@@ -1,36 +1,36 @@
 resources:
   - ../../base
-  - auth-secrets-sealed.yaml
-  - database-secrets-sealed.yaml
-  - database.yaml
-  - init-db-script.yaml
+  - secrets/auth-secrets-sealed.yaml
+  - secrets/database-secrets-sealed.yaml
+  - database/database.yaml
+  - database/init-db-script.yaml
 
 patches:
-  - path: product-service-replica-patch.yaml
+  - path: product-service-patch/product-service-replica-patch.yaml
     target:
       kind: Deployment
       name: product-service
-  - path: ui-replica-patch.yaml
+  - path: ui-patch/ui-replica-patch.yaml
     target:
       kind: Deployment
       name: ui
-  - path: scraper-service-replica-patch.yaml
+  - path: scraper-service-patch/scraper-service-replica-patch.yaml
     target:
       kind: Deployment
       name: scraper-service
-  - path: app-config-patch.yaml
+  - path: configmap-patch/app-config-patch.yaml
     target:
       kind: ConfigMap
       name: app-config
-  - path: auth-configmap-patch.yaml
+  - path: auth-service-patch/auth-configmap-patch.yaml
     target:
       kind: ConfigMap
       name: auth-configmap
-  - path: product-configmap-patch.yaml
+  - path: product-service-patch/product-configmap-patch.yaml
     target:
       kind: ConfigMap
       name: product-configmap
-  - path: database-configmap-patch.yaml
+  - path: database/database-configmap-patch.yaml
     target:
       kind: ConfigMap
       name: database-configmap
