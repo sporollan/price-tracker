@@ -14,9 +14,12 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/auth-url: "http://auth-service.default.svc.cluster.local:8080/validate"
     nginx.ingress.kubernetes.io/auth-proxy-set-headers: "default/auth-proxy-headers"
-    nginx.ingress.kubernetes.io/enable-cors: "true"  # Enable CORS
-    nginx.ingress.kubernetes.io/cors-allow-methods: "POST, GET, OPTIONS"  # Allow POST
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"  # Allow large bodies
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "POST, GET, OPTIONS, PUT, DELETE"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-origins: "http://${UI_HOST}"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 spec:
   rules:
   - host: ui.local

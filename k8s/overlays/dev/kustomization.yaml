@@ -5,6 +5,13 @@ resources:
   - database/database.yaml
   - database/init-db-script.yaml
 
+configMapGenerator:
+- name: app-config
+  behavior: merge
+  literals:
+  - ui.host=dev.ui.local
+  - cors.allowed.origins=http://dev.ui.local
+
 patches:
   - path: product-service-patch/product-service-replica-patch.yaml
     target:
@@ -34,3 +41,17 @@ patches:
     target:
       kind: ConfigMap
       name: database-configmap
+  - target:
+      kind: Ingress
+      name: protected-ingress
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: dev.ui.local
+  - target:
+      kind: Ingress
+      name: ui-ingress
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: dev.ui.local
