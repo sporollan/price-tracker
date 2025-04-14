@@ -53,6 +53,11 @@ spec:
               configMapKeyRef:
                 name: database-configmap
                 key: DDL-AUTO
+          - name: CORS_ALLOWED_ORIGINS
+            valueFrom:
+              configMapKeyRef:
+                name: app-config
+                key: cors.allowed.origins
         envFrom:
           - configMapRef:
               name: app-config

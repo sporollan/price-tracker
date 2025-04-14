@@ -44,11 +44,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("*"));
-        config.setAllowedMethods(Arrays.asList("*"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(false); // Must be false when using "*"
-    
+        String allowedOrigins = System.getenv("CORS_ALLOWED_ORIGINS");
+        
+        if (allowedOrigins == null || allowedOrigins.isEmpty()) {
+            allowedOrigins = "http://ui.local";  // Default fallback
+        }
+        
+        config.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+        config.setAllowedMethods(Arrays.asList("POST", "GET", "OPTIONS", "PUT", "DELETE"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.setAllowCredentials(true);
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;

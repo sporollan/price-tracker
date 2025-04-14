@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './ProductPriceGraph.styles.css'
-axios.defaults.baseURL = 'http://ui.local';
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
 
 const ProductPriceGraph = ({ productId }) => {
   const [priceData, setPriceData] = useState([]);

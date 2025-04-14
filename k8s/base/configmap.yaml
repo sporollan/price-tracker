@@ -4,6 +4,7 @@ metadata:
   name: app-config
 data:
   ENV: "prod"
+  ui.host: "ui.local"
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-axios.defaults.baseURL = 'http://ui.local';
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://error.ui.local';
 
 const Register = () => {
   const [email, setEmail] = useState("");

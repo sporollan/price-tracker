@@ -3,7 +3,7 @@ import Tracked from "../Tracked/Tracked"
 import Products from "../Products/Products"
 import './Home.styles.css'
 import { useState, useEffect } from 'react';
-axios.defaults.baseURL = 'http://ui.local';
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
 
 
 const Home = () => {

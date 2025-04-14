@@ -43,6 +43,11 @@ spec:
               secretKeyRef:
                 name: database-secrets
                 key: DB_PASSWORD
+          - name: CORS_ALLOWED_ORIGINS
+            valueFrom:
+              configMapKeyRef:
+                name: app-config
+                key: cors.allowed.origins
         envFrom:
           - configMapRef:
               name: app-config
