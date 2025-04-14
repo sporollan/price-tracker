@@ -2,7 +2,7 @@ import axios from "axios"
 import { useState } from 'react'
 import dayjs from "dayjs"
 import './ProductData.styles.css';
-axios.defaults.baseURL = 'http://ui.local';
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
 
 const ProductData = ({product}) => {
     const [products, setProducts] = useState([])

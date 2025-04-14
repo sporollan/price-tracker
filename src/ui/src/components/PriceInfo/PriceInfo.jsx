@@ -2,7 +2,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import { useState, useEffect } from 'react';
 import './PriceInfo.styles.css'
-axios.defaults.baseURL = 'http://ui.local';
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
 
 
 const PriceInfo = ({metadataId}) => {

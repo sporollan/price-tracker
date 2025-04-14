@@ -4,13 +4,13 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
+ENV REACT_APP_API_HOST=http://dev.ui.local
 RUN npm run build
 
 # Stage 2: Serve with Nginx
 FROM nginx:stable-alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Replace the default Nginx config with your own (optional)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80

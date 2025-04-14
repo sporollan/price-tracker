@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import './Tracked.styles.css'
 
 // Configure axios defaults for the host
-axios.defaults.baseURL = 'http://ui.local';
+axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
 
 const Tracked = ({setProducts}) => {
     const [trackedProducts, setTrackedProducts] = useState([]);
