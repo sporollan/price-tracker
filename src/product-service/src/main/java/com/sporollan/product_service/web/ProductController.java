@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +20,6 @@ import com.sporollan.product_service.service.ProductService;
 
 @RestController
 @RequestMapping("/product")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ProductController {
     @Autowired
     private final ProductService productService;
@@ -35,7 +33,6 @@ public class ProductController {
         return productService.greeting();
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public List<ProductDto> getProductById(@PathVariable String id) {
         return productService.getProductById(id);
