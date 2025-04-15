@@ -3,4 +3,37 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  ENVIRONMENT: "production"
+  ENV: "prod"
+  ui.host: "ui.local"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: database-configmap
+data:
+  DB_USER: ps_user
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-configmap
+data:
+  AUTH_DB: auth
+  AUTH_USER: auth_user
+  JWT_EXPIRATION_TIME_MILLIS: "36000000"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: product-configmap
+data:
+  PRODUCTS_DB: products
+  PRODUCTS_USER: products_user
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scraper-configmap
+data:
+  TRACKED_DB: tracked
+  TRACKED_USER: tracked_user

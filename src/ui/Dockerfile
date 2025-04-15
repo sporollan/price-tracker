@@ -1,12 +1,18 @@
-FROM node
-WORKDIR /code
-COPY package.json /code/package.json
-COPY package-lock.json /code/package-lock.json
+# Stage 1: Build the React app
+FROM node:23-slim AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+ENV REACT_APP_API_HOST=http://dev.ui.local
+RUN npm run build
 
-RUN npm install 
-COPY . /code
+# Stage 2: Serve with Nginx
+FROM nginx:stable-alpine
+COPY --from=build /app/build /usr/share/nginx/html
 
-ENV CI=true
-ENV PORT=3000
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-CMD [ "npm", "start" ]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+

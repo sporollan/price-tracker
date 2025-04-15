@@ -19,13 +19,24 @@ services:
     image: mongo
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: products
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: example
+#      MONGO_INITDB_DATABASE: products
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 5s
+      timeout: 10s
+      retries: 5
     volumes:
       - ./src/product-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - mongodbdata:/data/db
+  wait-for-mongo:
+      image: docker.io/busybox:1.35
+      depends_on:
+        product-db:
+          condition: service_healthy
+      command: sh -c "until nc -z product-db 27017; do echo 'Waiting for MongoDB'; sleep 2; done"
   scraper-db:
     hostname: scraper-db
     image: postgres

@@ -34,3 +34,7 @@
     height: 30px;
     background-color: rgb(243, 241, 241);
 }
+
+.nav-link {
+    color: white;
+}

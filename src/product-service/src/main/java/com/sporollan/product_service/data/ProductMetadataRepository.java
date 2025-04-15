@@ -2,13 +2,11 @@ package com.sporollan.product_service.data;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.sporollan.product_service.model.ProductMetadata;
 
-public interface ProductMetadataRepository extends MongoRepository<ProductMetadata, String> {
-    List<ProductMetadata> findByTracked(@Param("tracked") String tracked);
-    ProductMetadata findByName(@Param("name") String name);
+public interface ProductMetadataRepository extends JpaRepository<ProductMetadata, String> {
+    List<ProductMetadata> findByTrackedContaining(String tracked);
+    ProductMetadata findByName(String name);
 
 }
