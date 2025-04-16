@@ -1,6 +1,6 @@
 ./util/build-images.sh
 sleep 2
-MANIFEST_DIR="k8s/overlays/production"
+MANIFEST_DIR="k8s/overlays/prod"
 if [[ -d "$MANIFEST_DIR" ]]; then
     kubectl apply -k "$MANIFEST_DIR"
 
