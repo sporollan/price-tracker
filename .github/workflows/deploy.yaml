@@ -17,4 +17,5 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
+          chmod +x ./util/*
           ./util/deploy.sh
