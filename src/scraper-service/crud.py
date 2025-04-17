@@ -1,8 +1,9 @@
+import models
+import schemas
 
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import Session
 
-import models, schemas
 
 def create_tracked(
         db: Session,
@@ -143,3 +144,11 @@ def get_one_tracked_by_id_and_user(db: Session,
              .filter(models.User.id == user) \
     
     user.tracked_items
+
+
+def update_last_scraped(task_db: Session,
+                        tracked_item: models.Tracked,
+                        now: int):
+        tracked_item.last_scraped = now
+        task_db.commit()
+        task_db.close()

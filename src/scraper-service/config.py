@@ -23,3 +23,7 @@ DATABASE_URL = get_database_url()
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# CORS Setup
+cors_origins = os.getenv("CORS_ALLOW_ORIGINS", "")
+origins = [origin.strip() for origin in cors_origins.split(",") if origin.strip()]
