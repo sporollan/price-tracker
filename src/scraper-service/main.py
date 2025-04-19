@@ -5,7 +5,7 @@ import database
 
 from scraper import Scraper
 from typing import List
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from dependency import get_db, get_now, get_scraper
@@ -109,3 +109,16 @@ async def run_scraper_one(
     now: int = Depends(get_now)
 ):
     return service.run_scraper_one(id=id, db=db, sc=sc, now=now)
+
+# health and readiness
+@app.get("/liveness", status_code=200)
+def health_check():
+    return {"status": "ok"}
+
+@app.get("/readiness")
+def readiness_check():
+    try:
+        # Check DB, cache, etc.
+        return {"status": "ready"}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail={"status": "not ready", "reason": str(e)})
