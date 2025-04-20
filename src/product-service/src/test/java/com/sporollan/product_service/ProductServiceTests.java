@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
 import com.sporollan.product_service.data.ProductMetadataRepository;
@@ -76,12 +77,12 @@ public class ProductServiceTests {
         ResponseEntity<List<ProductDto>> createResponse = productService
                                     .createProduct(products);
         // get metadata
-        ResponseEntity<List<ProductMetadataDto>> metadataResponse = productMetadataService
-                                            .getByTracked("Cafe");
+        ResponseEntity<Page<ProductMetadataDto>> metadataResponse = productMetadataService
+                                            .getByTracked("Cafe", 0, 10);
         assert metadataResponse.getStatusCode().equals(HttpStatus.OK);
 
         // assert metadata is created and product has correct id
-        List<ProductMetadataDto> metadata = metadataResponse.getBody();
+        List<ProductMetadataDto> metadata = metadataResponse.getBody().getContent();
         ProductMetadataDto md = metadata.get(0);
         List<ProductDto> productResponse = productService.getProductById(md.getId());
         ProductDto p = productResponse.get(0);
@@ -98,8 +99,8 @@ public class ProductServiceTests {
                                     .createProduct(products2);
         assert createResponse2.getStatusCode().equals(HttpStatus.BAD_REQUEST);
         assert createResponse2.getBody().size() == 0;
-        ResponseEntity<List<ProductMetadataDto>> metadataResponse2 = productMetadataService
-                                            .getByTracked("Cafe Grano");
+        ResponseEntity<Page<ProductMetadataDto>> metadataResponse2 = productMetadataService
+                                            .getByTracked("Cafe Grano", 0, 10);
         // Tracked should link to product even if it was duplicate
         assert metadataResponse2.getStatusCode().equals(HttpStatus.OK);
     }
