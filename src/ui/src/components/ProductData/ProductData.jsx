@@ -1,9 +1,10 @@
 import axios from "axios"
 import { useState } from 'react'
 import dayjs from "dayjs"
+import utc from 'dayjs/plugin/utc';
 import './ProductData.styles.css';
 axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
-
+dayjs.extend(utc)
 const ProductData = ({product}) => {
     const [products, setProducts] = useState([])
     const [toggle, setToggle] = useState(false)
@@ -38,7 +39,7 @@ const ProductData = ({product}) => {
                         toggle &&
                         <div className="product_data" key={productData.id}>
                                 <div className="product_data_individual">
-                                    {dayjs(new Date(productData.dateAdded)).format("DD/MM/YY")}
+                                    {dayjs.utc(new Date(productData.dateAdded)).format("DD/MM/YY")}
                                 </div>
                                 <div className="product_data_individual">
                                     {"$" + productData.price/100}

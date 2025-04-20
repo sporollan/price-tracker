@@ -2,7 +2,10 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './ProductPriceGraph.styles.css'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 axios.defaults.baseURL = process.env.REACT_APP_API_HOST || 'http://ui.local';
+dayjs.extend(utc);
 
 const ProductPriceGraph = ({ productId }) => {
   const [priceData, setPriceData] = useState([]);
@@ -25,7 +28,7 @@ const ProductPriceGraph = ({ productId }) => {
       
       // Format the data if needed
       const formattedData = data.map(item => ({
-        date: new Date(item.dateAdded).toLocaleDateString(),
+        date: dayjs.utc(item.dateAdded).format('DD/MM/YY'),
         price: item.price/100,
         // You can add additional metrics if available
         // averageMarketPrice: item.averageMarketPrice,
