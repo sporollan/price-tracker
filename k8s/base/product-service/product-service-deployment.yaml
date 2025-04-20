@@ -30,10 +30,22 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 5        
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 10
         resources:
           requests:
             memory: "512Mi"
-            cpu: "512m"
+            cpu: "128m"
           limits:
             memory: "2048Mi"
             cpu: "2"

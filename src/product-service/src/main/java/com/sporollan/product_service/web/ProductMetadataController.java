@@ -1,19 +1,17 @@
 package com.sporollan.product_service.web;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sporollan.product_service.dto.ProductMetadataDto;
-import com.sporollan.product_service.exception.ProductMetadataNotFoundException;
 import com.sporollan.product_service.model.ProductMetadata;
 import com.sporollan.product_service.service.ProductMetadataService;
 
@@ -28,21 +26,17 @@ public class ProductMetadataController {
     }
 
     @GetMapping("/{tracked}")
-    public ResponseEntity<List<ProductMetadataDto>> getByTracked(@PathVariable String tracked) {
-        List<ProductMetadataDto> dtoList;
-        try {
-            dtoList = metadataService.getByTracked(tracked).stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.OK).body(dtoList);
-        } catch (ProductMetadataNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(Collections.emptyList()); 
-        } catch (Exception e){
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Collections.emptyList());
-        }
+    public ResponseEntity<Page<ProductMetadataDto>> getByTracked(
+            @PathVariable String tracked,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductMetadataDto> dtoPage = metadataService
+            .getByTracked(tracked, pageable)
+            .map(this::mapToDto);
+
+        return ResponseEntity.ok(dtoPage);
     }
 
     private ProductMetadataDto mapToDto(ProductMetadata metadata) {

@@ -4,4 +4,4 @@ metadata:
   name: database-configmap
 data:
   DB_HOST: database
-  DDL-AUTO: update
+  DDL-AUTO: none

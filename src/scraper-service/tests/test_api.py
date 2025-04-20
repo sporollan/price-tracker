@@ -5,9 +5,10 @@ from main import app
 
 client = TestClient(app)
 def test_root_endpoint_success():
-    response = client.get("/")
-    assert response.status_code == 200
-    assert response.json() == {"message": "Hello World"}
+    with TestClient(app) as client:
+        response = client.get("/")
+        assert response.status_code == 200
+        assert response.json() == {"message": "Hello World"}
 
 def test_get_tracked_endpoint_success():
     response = client.get("/tracked", params={
@@ -30,7 +31,7 @@ def test_get_tracked_endpoint_failure():
     assert response.status_code == 404
 
 def test_create_tracked_endpoint_success():
-    with patch('main.scrape_item', new_callable=AsyncMock) as mock_scrape_item:
+    with patch('service.scrape_item', new_callable=AsyncMock) as mock_scrape_item:
         mock_scrape_item.return_value = True  # or True depending on what you want to test
         response = client.post("/tracked", json={'name': 'cafe', 'sites': 'COTO', 'users': ['u@gmail.com']})    
     assert response.status_code == 200
@@ -44,7 +45,7 @@ def test_create_tracked_endpoint_success():
     assert isinstance(response.json()['last_scraped'], int)
 
 def test_create_tracked_endpoint_duplicate():
-    with patch('main.scrape_item', new_callable=AsyncMock) as mock_scrape_item:
+    with patch('service.scrape_item', new_callable=AsyncMock) as mock_scrape_item:
         mock_scrape_item.return_value = False
         response = client.post("/tracked", json={'name': 'cafe1', 'sites': 'COTO', 'users': ['u@gmail.com']})
         assert response.status_code == 200
@@ -53,7 +54,7 @@ def test_create_tracked_endpoint_duplicate():
         assert response.json() == {'detail': 'Name already exists'}
 
 def test_create_tracked_endpoint_invalid_name():
-    with patch('main.scrape_item', new_callable=AsyncMock) as mock_scrape_item:
+    with patch('service.scrape_item', new_callable=AsyncMock) as mock_scrape_item:
         mock_scrape_item.return_value = False
         response = client.post("/tracked", json={'name': '', 'sites': 'COTO', 'users': ['u@gmail.com']})
         assert response.status_code == 422
@@ -66,10 +67,10 @@ def test_toggle_endpoint():
 
 def test_run_scraper_all_endpoint_no_new_data():
     # Mock get_tracked_all to return an empty list
-    with patch('main.scrape_all', new_callable=AsyncMock) as mock_scrape_all:
+    with patch('service.scrape_all', new_callable=AsyncMock) as mock_scrape_all:
         mock_scrape_all.return_value = None  # or True depending on what you want to test
         
-        with patch('main.crud.get_tracked_all') as mock_get_all:
+        with patch('service.crud.get_tracked_all') as mock_get_all:
             mock_get_all.return_value = []  # Empty list means no tracked items
             
             response = client.post("/run_scraper")
@@ -79,13 +80,13 @@ def test_run_scraper_all_endpoint_no_new_data():
 def test_run_scraper_all_endpoint_success():
 
     # Mock get_tracked_all to return a non-empty list
-    with patch('main.crud.get_tracked_all') as mock_get_all:
+    with patch('service.crud.get_tracked_all') as mock_get_all:
         # Create a mock tracked item
         mock_tracked = MagicMock()
         mock_get_all.return_value = [mock_tracked]  # Non-empty list
         
         # Mock scrape_all as an AsyncMock since it's an async function
-        with patch('main.scrape_all', new_callable=AsyncMock) as mock_scrape_all:
+        with patch('service.scrape_all', new_callable=AsyncMock) as mock_scrape_all:
             mock_scrape_all.return_value = None  # or True depending on what you want to test
             
             response = client.post("/run_scraper")

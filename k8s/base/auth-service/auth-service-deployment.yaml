@@ -34,18 +34,18 @@ spec:
           httpGet:
             path: /actuator/health/readiness
             port: 8080
-          initialDelaySeconds: 10 
+          initialDelaySeconds: 120
           periodSeconds: 5        
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness
             port: 8080
-          initialDelaySeconds: 10
+          initialDelaySeconds: 120
           periodSeconds: 10
         resources:
           requests:
             memory: "512Mi"
-            cpu: "512m"
+            cpu: "128m"
           limits:
             memory: "1024Mi"
             cpu: "1"
@@ -70,6 +70,11 @@ spec:
               configMapKeyRef:
                 name: app-config
                 key: cors.allowed.origins
+          - name: SPRING_JPA_HIBERNATE_DDL-AUTO
+            valueFrom:
+              configMapKeyRef:
+                name: database-configmap
+                key: DDL-AUTO
         envFrom:
           - configMapRef:
               name: app-config

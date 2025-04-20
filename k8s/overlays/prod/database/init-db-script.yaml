@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-db-script
+data:
+  init.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+      CREATE DATABASE ${AUTH_DB};
+      CREATE DATABASE ${TRACKED_DB};
+      CREATE DATABASE ${PRODUCTS_DB};
+
+      -- Auth Service User
+      CREATE USER ${AUTH_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';
+      ALTER DATABASE ${AUTH_DB} OWNER TO ${AUTH_USER};
+
+      -- User Service User
+      CREATE USER ${TRACKED_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';
+      ALTER DATABASE ${TRACKED_DB} OWNER TO ${TRACKED_USER};
+
+      -- Products Service User
+      CREATE USER ${PRODUCTS_USER} WITH PASSWORD '${POSTGRES_PASSWORD}';
+      ALTER DATABASE ${PRODUCTS_DB} OWNER TO ${PRODUCTS_USER};
+    EOSQL

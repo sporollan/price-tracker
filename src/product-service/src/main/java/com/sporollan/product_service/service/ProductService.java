@@ -3,15 +3,12 @@ package com.sporollan.product_service.service;
 import com.sporollan.product_service.data.ProductMetadataRepository;
 import com.sporollan.product_service.data.ProductRepository;
 import com.sporollan.product_service.dto.ProductDto;
-import com.sporollan.product_service.dto.ProductUpdateRequest;
 import com.sporollan.product_service.model.Product;
 import com.sporollan.product_service.model.ProductCreate;
 import com.sporollan.product_service.model.ProductMetadata;
 
 import jakarta.transaction.Transactional;
 
-import com.sporollan.product_service.exception.ProductMetadataNotFoundException;
-import com.sporollan.product_service.exception.ProductNotFoundException;
 
 import java.util.ArrayList;
 import java.util.Collections;

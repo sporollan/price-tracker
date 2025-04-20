@@ -3,8 +3,8 @@
 # Variables
 PROFILE_NAME="price-tracker"  # Name of the Minikube profile
 K8S_VERSION="v1.27.4"       # Kubernetes version (optional)
-MEMORY="4096"              # Memory allocation for Minikube (in MB)
-CPUS="2"                   # Number of CPUs for Minikube
+MEMORY="6144"              # Memory allocation for Minikube (in MB)
+CPUS="4"                   # Number of CPUs for Minikube
 INGRESS=true               # Enable ingress addon
 MANIFEST_DIR="k8s/overlays/dev"  # Directory containing your Kustomize manifests
 

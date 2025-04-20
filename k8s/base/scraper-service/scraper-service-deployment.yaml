@@ -30,10 +30,22 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 8001
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 8001
+          initialDelaySeconds: 120
+          periodSeconds: 5        
+        livenessProbe:
+          httpGet:
+            path: /liveness
+            port: 8001
+          initialDelaySeconds: 120
+          periodSeconds: 10
         resources:
           requests:
             memory: "1024Mi"
-            cpu: "1024m"
+            cpu: "128m"
           limits:
             memory: "4096Mi"
             cpu: "4096m"
